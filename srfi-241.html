@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>SRFI 241: Match &mdash; Simple Pattern-Matching Syntax to Express Catamorphisms on Scheme Data</title>
+    <link href="/favicon.png" rel="icon" sizes="192x192" type="image/png">
+    <link rel="stylesheet" href="https://srfi.schemers.org/srfi.css" type="text/css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+          font-family: serif;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><a href="https://srfi.schemers.org/"><img class="srfi-logo" src="https://srfi.schemers.org/srfi-logo.svg" alt="SRFI logo" /></a>241: Match &mdash; Simple Pattern-Matching Syntax to Express Catamorphisms on Scheme Data</h1>
+
+    <p>by Marc Nieper-Wißkirchen</p>
+
+    <h2 id="status">Status</h2>
+
+    <h2 id="abstract">Abstract</h2>
+
+    <p>
+      This SRFI describes a simple pattern matcher based on one
+      originally devised by Kent Dybvig, Dan Friedman, and Eric
+      Hilsdale, which has a catamorphism feature to perform recursion
+      automatically.
+    </p>
+
+    <h2 id="issues">Issues</h2>
+
+    <p>None at present.</p>
+
+    <h2 id="rationale">Rationale</h2>
+
+    <p>
+      Pattern matching to destructure expressions is a common task in
+      data-oriented programming.  Consequently, a number of
+      pattern-matching libraries for Scheme have found more widespread
+      use.  Among them are the three mentioned in the
+      (withdrawn) <a href="https://srfi.schemers.org/srfi-200/srfi-200.html">SRFI
+      200</a>, namely Racket's pattern matcher, the pattern matcher of
+      Andrew Wright and Robert Cartwright with extensions by Alex
+      Shinn, and a pattern matcher that has been described by R. Kent
+      Dybvig for the use with his Chez Scheme implementation.
+    </p>
+
+    <p>The last-mentioned matcher matcher, which is appealing
+      also from a theoretical point of view is finally the basis of
+      the matcher described in this SRFI.  Contrary to the other two
+      matchers, it has a simple pattern language.  It's strength lies
+      in its catamorphism feature to perform recursion automatically.
+      It is called <code>match</code>.
+    </p>
+
+    <p>
+      While one use of pattern matching is to bind variables, it can
+      also be used to recursively destructure a value in the sense of
+      R<sup>6</sup>RS's
+      or <a href="https://srfi.schemers.org/srfi-1/srfi-1.html">SRFI
+      1</a>'s <code>fold-right</code>.  In high-brow category
+      language, such procedures destructuring inductive values are
+      called <em>catamorphisms</em>.
+    </p>
+
+    <p>In some sense, <code>match</code> syntactically expresses the
+      general catamorphism on Scheme datums.  For example, the
+      aforementioned <code>fold-right</code> procedure (restricted to
+      a single list argument) can be implemented as follows:
+    </p>
+
+    <small><pre>
+    (define (fold-right kons knil lis)
+      (match lis
+        [(,x . ,[x*]) (kons x x*)]
+        [() knil]))</pre></small>
+
+    <p>
+      The syntax employed by the pattern matcher by Dybvig, Friedman,
+      and Hilsdale, on which the one described here is based, is also
+      the basis of the syntax of
+      <a href="https://nanopass.org/">The Nanopass Framework</a>.
+    </p>
+
+    <h3>Examples</h3>
+
+    <p>A <code>match</code> expression evaluates an input expression
+      producing an input value.  This value is then matched against
+      the patterns of a <code>match</code> expression as much as the
+      input of a <code>case</code> expression is matched against
+      datums.</p>
+
+    <p>The general form of a match expression is</p>
+
+    <p><code>(match &lang;expr&rang; &lang;clause&rang; &hellip;)</code></p>
+
+    <p>where <code>&lang;expr&rang;</code> is the input expression to match and
+      each clause has one of the following two forms:</p>
+
+    <p><code>[&lang;pattern&rang; (guard
+        &lang;guard expression&rang; &hellip;) &lang;body&rang;]</code></p>
+
+    <p><code>[&lang;pattern&rang; &lang;body&rang;]</code></p>
+
+    <p>
+      As with <code>case</code>, the input expression is evaluated to
+      produce the input value and the first clause the input value
+      matches, if any, is selected.  The <code>body</code> of the
+      selected clause is evaluated, and the values of the last
+      expression in the body are returned.  An input value matches a
+      clause if it fits the clause's pattern and the
+      <code>&lang;guard expressions&rang;</code>, if any, evaluates to a
+      true value.  Patterns may contain symbolic constants, which must
+      match exactly, and pattern variables, which match any
+      input.  Pattern variables are prefixed by commas; symbolic
+      constants are not.
+    </p>
+
+    <small><pre>
+    (match '(a 17 37)
+      [(a ,x) 1]
+      [(b ,x ,y) 2]
+      [(a ,x ,y) 3])    ⟹ 3</pre></small>
+
+    <p>The first clause fails to match because there are three items
+    in the input list, and the pattern has only two.  The second
+    clause fails because <code>b</code> does not match <code>a</code>.</p>
+
+    <p>In the output expressions, the values of the pattern variables
+    are bound to the corresponding pieces of input.</p>
+
+    <small><pre>
+    (match '(a 17 37)
+      [(a ,x) (- x)]
+      [(b ,x ,y) (+ x y)]
+      [(a ,x ,y) (* x y)])   ⟹ 629</pre></small>
+
+    <p>When followed by an ellipsis (<code>...</code>), a pattern
+      variable represents a sequence of input values.
+
+    <small><pre>
+    (match '(a 17 37) [(a ,x* ...) x*])   ⟹ (17 37)</pre></small>
+
+    <p>Ellipses can follow a structured pattern containing one or more
+      pattern variables.</p>
+
+    <small><pre>
+    (match '(begin (1 5) (2 6) (3 7) (4 8))
+      [(begin (,x* ,y*) ...) (append x* y*)])   ⟹ (1 2 3 4 5 6 7 8)</pre></small>
+
+    <p>Ellipses can be nested, producing sequences of sequences of values.</p>
+
+    <small><pre>
+    (match '((a b c d) (e f g) (h i) (j))
+      [((,x* ,y** ...) ...) (list x* y**)])   ⟹ ((a e h j) ((b c d) (f g) (i) ()))</pre></small>
+
+    <p>Recursion is frequently required while processing an input
+      value with <code>match</code>. Here, a procedure returning the
+      length of a list is defined.</p>
+
+    <small><pre>
+    (letrec
+        ([len
+          (lambda (lst)
+            (match lst
+              [() 0]
+              [(,x ,x* ...) (+ 1 (len x*))]))])
+      (len '(a b c d)))                           ⟹ 4</pre></small>
+
+    <p>
+      A simpler version of the above uses the catamorphism feature of
+      <code>match</code>. If a pattern variable is written as
+      <code>,[<var>var</var>]</code>, <code>match</code> recurs on the
+      matching subpart of the input before evaluating the output
+      expressions of the clause.
+
+    <small><pre>
+    (let ([len
+           (lambda (lst)
+             (match lst
+               [() 0]
+               [(,x . ,[y]) (+ 1 y)]))])
+      (len '(a b c d)))                      ⟹ 4</pre></small>
+
+    <p>In some cases, <code>match</code> will need to return multiple
+      values. The catamorphism syntax can be used to receive multiple
+      values. When making implicit recursive calls using the
+      catamorphism syntax, zero or more variables between the
+      parentheses can be included, each representing one of the
+      expected return values.</p>
+
+    <small><pre>
+    (let ([split
+           (lambda (lis)
+             (match lis
+               [() (values '() '())]
+               [(,x) (values `(,x) '())]
+               [(,x ,y . ,[odds evens]) (values `(,x . ,odds)
+                                                `(,y . ,evens))]))])
+      (split '(a b c d e f)))                                          ⟹ (a c e) (b d f)</pre></small>
+
+    <p>
+      Sometimes it is useful to explicitely name the operator in a
+      catamorphism subpattern. Whereas <code>,[&lang;variable&rang;
+      &hellip;]</code> recurs to the top of the current
+      match, <code>,[&lang;cata operator&rang; -> &lang;variable&rang;
+      &hellip;]</code> recurs to (the result of
+      evaluating) <code>&lang;cata
+      operator&rang;</code>. <code>&lang;Cata operator&rang;</code>
+      must evaluate to a procedure that accepts one argument, the
+      matched value, and returns as many values as there are
+      identifiers following the <code>-></code>.</p>
+
+    <p>
+      Here is an example
+      that illustrates the use of guards and how to achieve the effect
+      of a catch-all clause.
+    </p>
+
+    <small><pre>
+    (let ([simple-eval
+           (lambda (x)
+             (match x
+               [,i (guard (integer? i)) i]
+               [(+ ,[x*] ...) (apply + x*)]
+               [(* ,[x*] ...) (apply * x*)]
+               [(- ,[x] ,[y]) (- x y)]
+               [(/ ,[x] ,[y]) (/ x y)]
+               [,x (assertion-violation 'simple-eval "invalid expression" x))))])
+      (simple-eval '(+ (- 0 1) (+ 2 3))))                             ⟹ 4</pre></small>
+
+    <p>The <code>match</code> form extends <code>quasiquote</code> in
+      the <code>&lang;bodies&rang;</code> to an ellipsis-aware version
+      that allows ellipses to be used in place
+      of <code>unquote-splicing</code>, which often leads to more
+      readable code.  Consider the following transformer
+      of <code>let</code> forms in a Scheme-like language:</p>
+
+    <small><pre>
+    (define translate
+      (lambda (x)
+        (match x
+          [(let ([,var* ,expr*] ...) ,body ,body* ...)
+           `((lambda ,var* ,body ,@body*) ,@expr*)]
+          [,x (assertion-violation 'translate "invalid expression" x)])))</pre></small>
+
+    <p>This can be rewritten as follows:</p>
+
+    <small><pre>
+    (define translate
+      (lambda (x)
+      (match x
+        [(let ((,var* ,expr*) ...) ,body ,body* ...)
+         `((lambda ,var* ,body ,body* ...) ,expr* ...)]
+        [,x (assertion-violation 'translate "invalid expression" x)])))</pre></small>
+
+    <p>The better readability is, in particular, illustrated by a
+      procedure as the following with nested ellipses.  It converts
+      unnamed <code>let</code> expressions into direct lambda
+      applications, where the <code>let</code> has been generalized to
+      allow an implicit <code>begin</code> in each right-hand-side
+      expression.</p>
+
+    <small><pre>
+    (define (f x)
+      (match x
+        [(let ([,x ,e1 ...] ...) ,b1 ,b2 ...)
+         `((lambda (,x ...) ,b1 ,b2 ...)
+           (begin ,e1 ...) ...)]))</pre></small>
+
+    <p>The basic usage of (the ellipsis-aware) <code>quasiquote</code> is the same as in R<sup>6</sup>RS:</p>
+
+    <small><pre>
+    `(list ,(+ 1 2) 4)   &xrArr; (list 3 4)</pre></small>
+
+    <p>Lists can still be spliced into sequences.</p>
+
+    <small><pre>
+    `(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b)   &xrArr; (a 3 4 5 6 b)</pre></small>
+
+    <p>The extension to <code>quasiquote</code> allows ellipses to be
+    used in place of <code>unquote-splicing</code> (<code>,@</code>)
+      to piece together the output form.</p>
+
+    <small><pre>
+    `(a ,(+ 1 2) ,(map abs '(4 -5 6)) ... b)   &xrArr; (a 3 4 5 6 b)</pre></small>
+
+    <p>Within each subform followed by an ellipsis, each comma-prefixed item must be a list and all such items within the same subform must have the same length.</p>
+
+    <small><pre>
+    `((,'(1 2 3) . ,'(a b c)) ...)   &xrArr; ((1 . a) (2 . b) (3 . c))</pre></small>
+
+    <p>A subform followed by an ellipsis may be contained
+      within a larger subform that is also followed by an ellipsis. In
+      this case, each comma-prefixed item must be a list of lists, each
+      such item must have the same length, and the corresponding
+      sublists of each such item must have the same lengths. This
+      requirement generalizes to comma-prefixed items nested within more
+      than two levels of ellipsis-followed subforms.</p>
+
+    <small><pre>
+    `(((a ,'((x 1) (x 2) (x 3))) ...) ...)   &xrArr; (((a x) (a 1)) ((a x) (a 2)) ((a x) (a 3)))</pre></small>
+
+    <p>In the output, a subform may be followed directly by two or
+      more ellipses; the requirements are the same as for nested
+      ellipses, but the result is flattened rather than nested.</p>
+
+    <small><pre>
+    `((a ,'((x 1) (x 2) (x 3))) ... ...)   &xrArr; ((a x) (a 1) (a x) (a 2) (a x) (a 3))</pre></small>
+
+    <p>Ellipses can also follow subforms containing items prefixed by <code>unquote-splicing</code> (<code>,@</code>).</p>
+
+    <small><pre>
+    `((a ,@'((x 1) (x 2) (x 3))) ...)   &xrArr; ((a x 1) (a x 2) (a x 3))</pre></small>
+
+    <p>A subform of the form <code>(... &lang;form&rang;)</code> is
+    identical to <code>&lang;form&rang;</code>, except that ellipses
+      in the subform have no special meaning.</p>
+
+    <small><pre>
+    `(... (,'(1 2 3) ...))   &xrArr; ((1 2 3) ...)</pre></small>
+
+    <p>Substitutions are made only for unquoted components appearing
+    at the same nesting level as the outermost quasiquote.</p>
+
+    <small><pre>
+    `(a `(b ,(list 1 2) ... ,(foo ,(list 1 3) ... d) e) f)
+       &xrArr; (a `(b ,(list 1 2) ... ,(foo 1 3 d) e) f)</pre></small>
+
+    <h3>Relation to the (withdrawn) SRFI 204</h3>
+
+    <p>Both the (withdrawn) SRFI 204 and this SRFI describe a pattern
+      matcher and suggest that the respective one becomes included in
+      Scheme implementations and a future Scheme standard.  Yet, they
+      are not in competition with each other. Quite the contrary, it
+      makes a lot of sense that a Scheme system supports both matchers
+      as they apply to different areas.
+    </p>
+
+    <p>While a number of basic tasks can be solved equally well with
+      the matcher described in SRFI 204 and the matcher described
+      here, some problems are better solved with one or the other.
+      The matcher of SRFI 204 mirrors most of Scheme's binding
+      constructs.  For these binding constructs, the catamorphism
+      feature in this SRFI does not make sense, so this SRFI's matcher
+      lacks it.  On the other hand, the matcher described here
+      distinguished itself due to its catamorphism feature but,
+      therefore, cannot support binding constructs.
+    </p>
+
+    <p>
+      SRFI 204 has a complex pattern language and allows to write
+      complex matchers with just a single pattern.  If this is not
+      needed, the pattern language of this SRFI excels due to its
+      simplicity and exceptionally clear semantics.
+    </p>
+
+    <p>
+      For historical reasons, both the matcher described here and in
+      SRFI 204 are called <code>match</code>.  This specification does
+      not change the established name.  Fortunately, when reading
+      code, there is virtually no danger of confusion.  Pattern
+      variables in the matcher described here are all unquoted and
+      there is no quasiquote while in patterns of SRFI 204's match,
+      unquoted datums usually only appear in quasiquotations.
+    </p>
+
+    <p>If more than one matcher is needed in a program, one can easily
+      use the rename facility of the Scheme implementation's module
+      system.</p>
+
+    <p><i>Remark:</i> The author of this SRFI suggests that any
+      reviving attempt of SRFI 204 should make the resulting pattern
+      matcher extensible so that there are only few primitives with
+      clear semantics allowing the rest of the specification defined
+      in terms of them.</p>
+
+    <p>Even better than reviving SRFI 204 would be specifying a
+      facility to define type-safe matchers similar to the Nanopass
+      framework.</p>
+
+    <h2 id="specification">Specification</h2>
+
+    <h3>Pattern language</h3>
+
+    <p>The match form uses a pattern language akin
+      to <code>syntax-rules</code> and <code>syntax-case</code>, which
+      is described here.</p>
+
+    <p>A <code>&lang;pattern&rang;</code> has one of the following forms:</p>
+
+    <p><code>(&lang;pattern&rang; &lang;ellipsis&rang; . &lang;pattern&rang;)</code></p>
+
+    <p><code>(&lang;pattern&rang; . &lang;pattern&rang;)</code></p>
+
+    <p><code>()</code></p>
+
+    <p><code>#(&lang;pattern&rang; &hellip; &lang;pattern&rang; &lang;ellipsis&rang; &lang;pattern&rang; &hellip;)</code></p>
+
+    <p><code>,_</code></p>
+
+    <p><code>,&lang;pattern variable&rang;</code></p>
+
+    <p><code>&lang;cata pattern&rang;</code></p>
+
+    <p><code>&lang;symbol&rang;</code></p>
+
+    <p><code>&lang;constant&rang;</code></p>
+
+    <p>where a <code>&lang;cata pattern&rang;</code> has one of the following forms:</p>
+
+    <p><code>,[&lang;cata operator&rang; -&gt; &lang;cata variable&rang; …]</code></p>
+
+    <p><code>,[&lang;cata variable&rang; &hellip;]</code></p>
+
+    <p>and where the <code>&lang;ellipsis&rang;</code> is the
+      ellipsis <code>...</code> (in the sense
+      of <code>free-identifier=?</code>), <code>&lang;cata operators&rang;</code>
+      are expressions and <code>&lang;pattern variable&rang;</code>
+      and <code>&lang;cata variable&rang;</code> are identifiers.</p>
+
+    <p>In each <code>&lang;pattern&rang;</code>,
+      the <code>&lang;pattern variables&rang;</code>
+      and <code>&lang;cata variables&rang;</code> must be pairwise
+      disjoint (in the sense
+      of <code>bound-identifier=?</code>).  <code>&lang;Pattern
+      variables&rang;</code> must not
+      be <code>...</code>, <code>_</code>, or <code>unquote</code> (in
+      the sense of <code>free-identifier=?)</code>.</p>
+
+    <p>Patterns match Scheme values by the following rules:</p>
+
+    <p>A pattern of the form <code>(&lang;pattern<sub>1</sub>&rang;
+        &lang;ellipsis&rang; . &lang;pattern<sub>2</sub>&rang;)</code> matches a
+        dotted list if <code>&lang;pattern<sub>1</sub>&rang;</code>
+        matches each proper list element
+      and <code>&lang;pattern<sub>2</sub>&rang;</code> matches the tail of the dotted list.</p>
+
+    <p>A pattern of the form <code>(&lang;pattern<sub>1</sub>&rang;
+        . &lang;pattern<sub>2</sub>&rang;)</code> matches a
+        pair if <code>&lang;pattern<sub>1</sub>&rang;</code>
+        matches the car
+      and <code>&lang;pattern<sub>2</sub>&rang;</code> matches the cdr of the pair.</p>
+
+    <p>A pattern of the form <code>()</code> matches the empty list.</p>
+
+    <p>A pattern of the form <code>#(&lang;pattern<sub>1</sub>&rang; &hellip;
+    &lang;pattern<sub><var>k</var></sub>&rang; &lang;pattern<sub>e</sub>&rang;
+    &lang;ellipsis&rang; &lang;pattern<sub><var>m</var>+1</sub>&rang; &hellip;
+	&lang;pattern<sub><var>n</var></sub>&rang;)</code>
+      matches a vector of <var>n</var> or more elements whose first <var>k</var> elements match
+      <code>&lang;pattern<sub>1</sub>&rang;</code>
+      through <code>&lang;pattern<sub><var>k</var></sub>&rang;</code>,
+      whose next <var>m</var>&minus;<var>k</var> elements each match
+      <code>&lang;pattern<sub>e</sub>&rang;</code>, and whose remaining <var>n</var>&minus;<var>m</var> elements match
+      <code>&lang;pattern<sub><var>m</var>+1</sub>&rang;</code> through <code>&lang;pattern<sub><var>n</var></sub>&rang;</code>.
+    </p>
+
+    <p>A pattern of the form <code>,_</code> matches an arbitrary
+      Scheme value.</p>
+
+    <p>A pattern of the form <code>,&lang;pattern variable&rang;</code> matches an arbitrary Scheme value.</p>
+
+    <p>A <code>&lang;cata pattern&rang;</code> matches an arbitrary Scheme value.</p>
+
+    <p>A pattern of the form <code>&lang;symbol&rang;</code> matches a symbol
+      with the same name as <code>&lang;symbol&rang;</code>.</p>
+
+    <p>A pattern of the form <code>&lang;constant&rang;</code> match a value
+      that is equal (in the sense of <code>equal?</code>) to the
+      literal datum <code>&lang;constant&rang;</code>.</p>
+
+    <h3>Match</h3>
+
+    <p>The following syntax together with the auxiliary
+      syntax <code>unquote</code>, <code>unquote-splicing</code>,
+      <code>...</code>, <code>_</code>, <code>guard</code>, and <code>-&gt;</code> is
+      exported by the libraries <code>(srfi :241 match)</code>
+      and <code>(srfi :241)</code>.  The auxiliary
+      syntax <code>unquote</code>, <code>unquote-splicing</code>,
+      <code>...</code>, and <code>_</code> is identical to the
+      auxiliary syntax exported by <code>(rnrs base)</code>,
+      and <code>guard</code> is identical to the syntax exported
+      by <code>(rnrs exceptions)</code>.</p>
+
+    <p><code>(match &lang;input expression&rang; &lang;clause<sub>1</sub>&rang; …)</code></p>
+
+    <p><i>Syntax:</i> <code>&lang;input expression&rang;</code> can be any
+    expression.  The <code>&lang;clauses&rang;</code> take one of two forms, either
+    </p>
+
+    <p><code>(&lang;pattern&rang; &lang;body&rang;)</code></p>
+
+    <p>or</p>
+
+    <p><code>(&lang;pattern&rang; (guard &lang;guard expression&rang; &hellip;) &lang;body&rang;)</code></p>
+
+    <p>where the <code> &lang;guard expressions&rang;</code> can be
+      any expressions.</p>
+
+    <p><i>Semantics:</i> A <code>match</code> expression is evaluated
+      as follows: First, the <code>&lang;input expression&rang;</code> is
+      evaluated to yield an input value.  Then, the
+      first <code>&lang;clause&rang;</code> for which the input value matches
+      its <code>&lang;pattern&rang;</code> is selected.  The environment, in
+      which the <code>match</code> expression is evaluated, is
+      extended by binding the pattern variables of
+      the <code>&lang;pattern&rang;</code> to fresh locations, and the values
+      that were matched against these pattern variables are stored in
+      those location.  If <code>&lang;guard expressions&rang;</code> are present
+      in the selected clause, they are evaluated in left-to-right
+      order in the extended environment until one evaluates
+      to <code>#f</code>.  In this case, the rest of
+      the <code>&lang;clause&rang;</code> is skipped and pattern matching
+      proceeds with the next <code>&lang;clause&rang;</code>.  If
+      no <code>&lang;guard expression&rang;</code> evaluates
+      to <code>#f</code>, or if there is no <code>&lang;guard
+      expresssion&rang;</code> present, in unspecified order,
+      the <code>&lang;cata operators&rang;</code> of
+      the <code>&lang;cata clauses&rang;</code> in
+      the <code>&lang;pattern&rang;</code> of the
+      selected <code>&lang;clause&rang;</code> are evaluated in no
+      specific order in the extended environment to yield cata
+      procedures, which are then invoked on the value that was matched
+      against the <code>&lang;cata pattern&rang;</code>.  The
+      environment is extended a second time by binding
+      the <code>&lang;cata variables&rang;</code> of
+      these <code>&lang;cata patterns&rang;</code> to fresh locations,
+      and the values resulting from invoking the cata procedures are
+      stored in left-to-right order in the corresponding locations.
+      Finally, the twice extended environment is extended a third time
+      by binding <code>quasiquote</code> to ellipsis-aware
+      quasiquotation syntax (see below),
+      the <code>&lang;body&rang;</code> of the
+      selected <code>&lang;clause&rang;</code> is evaluated in this
+      thrice extended environment and the resulting values from its
+      last expression are returned.</p>
+
+    <p>If a <code>&lang;cata pattern&rang;</code> clause is of the
+      second form, the missing <code>&lang;cata operator&rang;</code>
+      defaults to an expression that evaluates to a procedure that, when
+      called with one argument, evaluates the <code>match</code>
+      expression with the input value replaced by the argument value in
+      tail position.</p>
+
+    <p>If no pattern of any clause is matched, an exception
+      of type <code>&amp;assertion-violation</code> is raised.
+    </p>
+
+    <p>If the <code>match</code> expression is in tail context,
+      the <code>&lang;bodies&rang;</code> are <code>&lang;tail
+	bodies&rang;</code>.
+    </p>
+
+    <p><i>Note:</i> A pattern variable in the sense of this SRFI is an
+      ordinary variable, not a <i>pattern variable</i> in the sense of
+      the <code>syntax-case</code> system of R<sup>6</sup>RS.</p>
+
+    <p><i>Remark:</i> The pattern language makes use
+      of <code>unquote</code> without a
+      corresponding <code>quasiquote</code>. It has been criticized
+      that this leads to an &ldquo;unbalanced&rdquo; quasiquotation
+      syntax (there is an <code>unquote</code> without
+      a surrounding <code>quasiquote</code>) and it has been suggested to add
+      the &ldquo;implicit&rdquo; <code>quasiquote</code> explicitely so
+      that the first example</p>
+
+    <small><pre>
+    (define (fold-right kons knil lis)
+      (match lis
+        [(,x . ,[x*]) (kons x x*)]
+        [() knil]))</pre></small>
+
+    <p>would become:</p>
+
+    <small><pre>
+    (define (fold-right kons knil lis)
+      (match lis
+        [`(,x . ,[x*]) (kons x x*)]
+        [`() knil]))</pre></small>
+
+    <p>We don't subscribe to the view that there is an
+      &ldquo;implicit&rdquo; <code>quasiquote</code> in
+      the <code>match</code> syntax described in this SRFI.  In
+      fact, <code>quasiquote</code> is not auxiliary syntax
+      for <code>match</code>, and if there were an
+      implicit <code>quasiquote</code>, a nested one should cancel
+      an <code>unquote</code>, which it doesn't.  The same fallacy was
+      made in SRFI 200.  Moreover, following the <code>unquote</code>
+      is not an expression, but either a <code>&lang;pattern
+	variable&rang;</code> or a <code>&lang;cata
+	pattern&rang;</code>.</p>
+
+    <h3>Ellipsis-aware quasiquotation</h3>
+
+    <p>The following syntax together with the auxiliary
+      syntax <code>unquote</code>, <code>unquote-splicing</code>,
+      and <code>...</code> is exported by the library <code>(srfi
+        :241 match quasiquote)</code>.  The auxiliary syntax is
+      identical to the auxiliary syntax exported by <code>(rnrs
+        base)</code>.</p>
+
+    <p><code>(quasiquote &lang;ellipsis-aware qq template&rang;)</code></p>
+
+    <p> If no instances of the ellipsis <code>...</code> appear within
+      the <code>&lang;ellipsis-aware qq template&rang;</code> at the
+      same nesting level as the outmost quasiquote, the result of
+      evaluating the ellipsis-aware <code>quasiquote</code> is the
+      same as if the <code>quasiquote</code> syntax of R<sup>6</sup>RS
+      were used.  A subtemplate of the
+      form <code>(&lang;ellipsis&rang; &lang;qq template&rang;)</code>
+      is identical to <code>&lang;qq template&rang;</code>, except
+      that ellipses within <code>&lang;qq template&rang;</code> have
+      no special meaning.  If a subtemplate is followed by one or more
+      instances of the <code>&lang;ellipsis&rang;</code>, the
+      expressions following a comma have to evaluate into nested lists
+      of (at least) the same nesting depths. They are replaced in the
+      output by all of the elements they match in the input,
+      distributed as indicated.  It is an error if the output cannot
+      be built up as specified.  An <code>(&lang;unquote-splicing
+      &lang;expression&rang; &hellip;)</code> form is equivalent to
+      <code>(&lang;unquote&rang; &lang;expression&rang; &hellip;)
+	&lang;ellipsis&rang;</code>.</p>
+
+    <p>The auxiliary syntax <code>quasiquote</code> within
+      an <code>&lang;ellipsis-aware qq template&rang;</code> is the
+      ellipsis-aware <code>quasiquote</code>.</p>
+
+    <h2 id="implementation">Implementation</h2>
+
+    <p>A <a href="https://github.com/scheme-requests-for-implementation/srfi-237/tree/main/lib">portable
+        implementation</a> for R<sup>6</sup>RS systems is
+      in <a href="https://github.com/scheme-requests-for-implementation/srfi-237">this
+        SRFI's repository</a>.</p>
+
+    <p>A portable implementation for R<sup>7</sup>RS systems that
+      support <code>syntax-case</code> is possible as well.  For an
+      R<sup>7</sup>RS implementation, the library names should be
+      derived from the given
+      (<a href="https://srfi.schemers.org/srfi-200/srfi-200.html">SRFI
+      97</a>-conformant) R<sup>6</sup>RS library names as usual.</p>
+
+    <h2 id="acknowledgements">Acknowledgements</h2>
+
+    <p>
+      The pattern matcher defined here has originally been described
+      by R. Kent Dybvig.  The original program was originally designed
+      and implemented by Dan Friedman.  It was later redesigned and
+      reimplemented by Erik Hilsdale.  The sample implementation of
+      this SRFI shares no code with Dybvig's, Friedman's and
+      Hilsdale's version.
+    </p>
+
+    <p>The example section shamelessly reuses text from
+      <a href="https://web.archive.org/web/20181006202112/https://www.cs.indiana.edu/chezscheme/match/">R. Kent
+        Dybvig's original description</a>.
+    </p>
+
+    <h2 id="copyright">Copyright</h2>
+    <p>&copy; 2022 Marc Nieper-Wißkirchen.</p>
+
+    <p>
+      Permission is hereby granted, free of charge, to any person
+      obtaining a copy of this software and associated documentation files
+      (the "Software"), to deal in the Software without restriction,
+      including without limitation the rights to use, copy, modify, merge,
+      publish, distribute, sublicense, and/or sell copies of the Software,
+      and to permit persons to whom the Software is furnished to do so,
+      subject to the following conditions:</p>
+
+    <p>
+      The above copyright notice and this permission notice (including the
+      next paragraph) shall be included in all copies or substantial
+      portions of the Software.</p>
+    <p>
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+      MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+      NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+      BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+      ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+      CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+      SOFTWARE.</p>
+
+    <hr>
+    <address>Editor: <a href="mailto:srfi-editors+at+srfi+dot+schemers+dot+org">Arthur A. Gleckler</a></address>
+  </body>
+</html>
