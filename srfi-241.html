@@ -10,6 +10,9 @@
       body {
           font-family: serif;
       }
+      pre {
+	  font-size: smaller;
+      }
     </style>
   </head>
   <body>
@@ -70,11 +73,10 @@
       a single list argument) can be implemented as follows:
     </p>
 
-    <small><pre>
-    (define (fold-right kons knil lis)
+    <pre>    (define (fold-right kons knil lis)
       (match lis
         [(,x . ,[x*]) (kons x x*)]
-        [() knil]))</pre></small>
+        [() knil]))</pre>
 
     <p>
       The syntax employed by the pattern matcher by Dybvig, Friedman,
@@ -117,11 +119,10 @@
       constants are not.
     </p>
 
-    <small><pre>
-    (match '(a 17 37)
+    <pre>    (match '(a 17 37)
       [(a ,x) 1]
       [(b ,x ,y) 2]
-      [(a ,x ,y) 3])    ⟹ 3</pre></small>
+      [(a ,x ,y) 3])    ⟹ 3</pre>
 
     <p>The first clause fails to match because there are three items
     in the input list, and the pattern has only two.  The second
@@ -130,43 +131,38 @@
     <p>In the output expressions, the values of the pattern variables
     are bound to the corresponding pieces of input.</p>
 
-    <small><pre>
-    (match '(a 17 37)
+    <pre>    (match '(a 17 37)
       [(a ,x) (- x)]
       [(b ,x ,y) (+ x y)]
-      [(a ,x ,y) (* x y)])   ⟹ 629</pre></small>
+      [(a ,x ,y) (* x y)])   ⟹ 629</pre>
 
     <p>When followed by an ellipsis (<code>...</code>), a pattern
       variable represents a sequence of input values.
 
-    <small><pre>
-    (match '(a 17 37) [(a ,x* ...) x*])   ⟹ (17 37)</pre></small>
+    <pre>    (match '(a 17 37) [(a ,x* ...) x*])   ⟹ (17 37)</pre>
 
     <p>Ellipses can follow a structured pattern containing one or more
       pattern variables.</p>
 
-    <small><pre>
-    (match '(begin (1 5) (2 6) (3 7) (4 8))
-      [(begin (,x* ,y*) ...) (append x* y*)])   ⟹ (1 2 3 4 5 6 7 8)</pre></small>
+    <pre>    (match '(begin (1 5) (2 6) (3 7) (4 8))
+      [(begin (,x* ,y*) ...) (append x* y*)])   ⟹ (1 2 3 4 5 6 7 8)</pre>
 
     <p>Ellipses can be nested, producing sequences of sequences of values.</p>
 
-    <small><pre>
-    (match '((a b c d) (e f g) (h i) (j))
-      [((,x* ,y** ...) ...) (list x* y**)])   ⟹ ((a e h j) ((b c d) (f g) (i) ()))</pre></small>
+    <pre>    (match '((a b c d) (e f g) (h i) (j))
+      [((,x* ,y** ...) ...) (list x* y**)])   ⟹ ((a e h j) ((b c d) (f g) (i) ()))</pre>
 
     <p>Recursion is frequently required while processing an input
       value with <code>match</code>. Here, a procedure returning the
       length of a list is defined.</p>
 
-    <small><pre>
-    (letrec
+    <pre>    (letrec
         ([len
           (lambda (lst)
             (match lst
               [() 0]
               [(,x ,x* ...) (+ 1 (len x*))]))])
-      (len '(a b c d)))                           ⟹ 4</pre></small>
+      (len '(a b c d)))                           ⟹ 4</pre>
 
     <p>
       A simpler version of the above uses the catamorphism feature of
@@ -175,13 +171,12 @@
       matching subpart of the input before evaluating the output
       expressions of the clause.
 
-    <small><pre>
-    (let ([len
+    <pre>    (let ([len
            (lambda (lst)
              (match lst
                [() 0]
                [(,x . ,[y]) (+ 1 y)]))])
-      (len '(a b c d)))                      ⟹ 4</pre></small>
+      (len '(a b c d)))                      ⟹ 4</pre>
 
     <p>In some cases, <code>match</code> will need to return multiple
       values. The catamorphism syntax can be used to receive multiple
@@ -190,15 +185,14 @@
       parentheses can be included, each representing one of the
       expected return values.</p>
 
-    <small><pre>
-    (let ([split
+    <pre>    (let ([split
            (lambda (lis)
              (match lis
                [() (values '() '())]
                [(,x) (values `(,x) '())]
                [(,x ,y . ,[odds evens]) (values `(,x . ,odds)
                                                 `(,y . ,evens))]))])
-      (split '(a b c d e f)))                                          ⟹ (a c e) (b d f)</pre></small>
+      (split '(a b c d e f)))                                          ⟹ (a c e) (b d f)</pre>
 
     <p>
       Sometimes it is useful to explicitly name the operator in a
@@ -218,8 +212,7 @@
       of a catch-all clause.
     </p>
 
-    <small><pre>
-    (let ([simple-eval
+    <pre>    (let ([simple-eval
            (lambda (x)
              (match x
                [,i (guard (integer? i)) i]
@@ -228,7 +221,7 @@
                [(- ,[x] ,[y]) (- x y)]
                [(/ ,[x] ,[y]) (/ x y)]
                [,x (assertion-violation 'simple-eval "invalid expression" x))))])
-      (simple-eval '(+ (- 0 1) (+ 2 3))))                             ⟹ 4</pre></small>
+      (simple-eval '(+ (- 0 1) (+ 2 3))))                             ⟹ 4</pre>
 
     <p>The <code>match</code> form extends <code>quasiquote</code> in
       the <code>&lang;bodies&rang;</code> to an ellipsis-aware version
@@ -237,23 +230,21 @@
       readable code.  Consider the following transformer
       of <code>let</code> forms in a Scheme-like language:</p>
 
-    <small><pre>
-    (define translate
+    <pre>    (define translate
       (lambda (x)
         (match x
           [(let ([,var* ,expr*] ...) ,body ,body* ...)
            `((lambda ,var* ,body ,@body*) ,@expr*)]
-          [,x (assertion-violation 'translate "invalid expression" x)])))</pre></small>
+          [,x (assertion-violation 'translate "invalid expression" x)])))</pre>
 
     <p>This can be rewritten as follows:</p>
 
-    <small><pre>
-    (define translate
+    <pre>    (define translate
       (lambda (x)
       (match x
         [(let ((,var* ,expr*) ...) ,body ,body* ...)
          `((lambda ,var* ,body ,body* ...) ,expr* ...)]
-        [,x (assertion-violation 'translate "invalid expression" x)])))</pre></small>
+        [,x (assertion-violation 'translate "invalid expression" x)])))</pre>
 
     <p>The better readability is, in particular, illustrated by a
       procedure as the following with nested ellipses.  It converts
@@ -262,34 +253,29 @@
       allow an implicit <code>begin</code> in each right-hand-side
       expression.</p>
 
-    <small><pre>
-    (define (f x)
+    <pre>    (define (f x)
       (match x
         [(let ([,x ,e1 ...] ...) ,b1 ,b2 ...)
          `((lambda (,x ...) ,b1 ,b2 ...)
-           (begin ,e1 ...) ...)]))</pre></small>
+           (begin ,e1 ...) ...)]))</pre>
 
     <p>The basic usage of (the ellipsis-aware) <code>quasiquote</code> is the same as in R<sup>6</sup>RS:</p>
 
-    <small><pre>
-    `(list ,(+ 1 2) 4)   &xrArr; (list 3 4)</pre></small>
+    <pre>    `(list ,(+ 1 2) 4)   &xrArr; (list 3 4)</pre>
 
     <p>Lists can still be spliced into sequences.</p>
 
-    <small><pre>
-    `(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b)   &xrArr; (a 3 4 5 6 b)</pre></small>
+    <pre>    `(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b)   &xrArr; (a 3 4 5 6 b)</pre>
 
     <p>The extension to <code>quasiquote</code> allows ellipses to be
     used in place of <code>unquote-splicing</code> (<code>,@</code>)
       to piece together the output form.</p>
 
-    <small><pre>
-    `(a ,(+ 1 2) ,(map abs '(4 -5 6)) ... b)   &xrArr; (a 3 4 5 6 b)</pre></small>
+    <pre>    `(a ,(+ 1 2) ,(map abs '(4 -5 6)) ... b)   &xrArr; (a 3 4 5 6 b)</pre>
 
     <p>Within each subform followed by an ellipsis, each comma-prefixed item must be a list and all such items within the same subform must have the same length.</p>
 
-    <small><pre>
-    `((,'(1 2 3) . ,'(a b c)) ...)   &xrArr; ((1 . a) (2 . b) (3 . c))</pre></small>
+    <pre>    `((,'(1 2 3) . ,'(a b c)) ...)   &xrArr; ((1 . a) (2 . b) (3 . c))</pre>
 
     <p>A subform followed by an ellipsis may be contained
       within a larger subform that is also followed by an ellipsis. In
@@ -299,34 +285,29 @@
       requirement generalizes to comma-prefixed items nested within more
       than two levels of ellipsis-followed subforms.</p>
 
-    <small><pre>
-    `(((a ,'((x 1) (x 2) (x 3))) ...) ...)   &xrArr; (((a x) (a 1)) ((a x) (a 2)) ((a x) (a 3)))</pre></small>
+    <pre>    `(((a ,'((x 1) (x 2) (x 3))) ...) ...)   &xrArr; (((a x) (a 1)) ((a x) (a 2)) ((a x) (a 3)))</pre>
 
     <p>In the output, a subform may be followed directly by two or
       more ellipses; the requirements are the same as for nested
       ellipses, but the result is flattened rather than nested.</p>
 
-    <small><pre>
-    `((a ,'((x 1) (x 2) (x 3))) ... ...)   &xrArr; ((a x) (a 1) (a x) (a 2) (a x) (a 3))</pre></small>
+    <pre>    `((a ,'((x 1) (x 2) (x 3))) ... ...)   &xrArr; ((a x) (a 1) (a x) (a 2) (a x) (a 3))</pre>
 
     <p>Ellipses can also follow subforms containing items prefixed by <code>unquote-splicing</code> (<code>,@</code>).</p>
 
-    <small><pre>
-    `((a ,@'((x 1) (x 2) (x 3))) ...)   &xrArr; ((a x 1) (a x 2) (a x 3))</pre></small>
+    <pre>    `((a ,@'((x 1) (x 2) (x 3))) ...)   &xrArr; ((a x 1) (a x 2) (a x 3))</pre>
 
     <p>A subform of the form <code>(... &lang;form&rang;)</code> is
     identical to <code>&lang;form&rang;</code>, except that ellipses
       in the subform have no special meaning.</p>
 
-    <small><pre>
-    `(... (,'(1 2 3) ...))   &xrArr; ((1 2 3) ...)</pre></small>
+    <pre>    `(... (,'(1 2 3) ...))   &xrArr; ((1 2 3) ...)</pre>
 
     <p>Substitutions are made only for unquoted components appearing
     at the same nesting level as the outermost quasiquote.</p>
 
-    <small><pre>
-    `(a `(b ,(list 1 2) ... ,(foo ,(list 1 3) ... d) e) f)
-       &xrArr; (a `(b ,(list 1 2) ... ,(foo 1 3 d) e) f)</pre></small>
+    <pre>    `(a `(b ,(list 1 2) ... ,(foo ,(list 1 3) ... d) e) f)
+       &xrArr; (a `(b ,(list 1 2) ... ,(foo 1 3 d) e) f)</pre>
 
     <h3>Relation to the (withdrawn) SRFI 204</h3>
 
@@ -566,19 +547,17 @@
       the &ldquo;implicit&rdquo; <code>quasiquote</code> explicitly so
       that the first example</p>
 
-    <small><pre>
-    (define (fold-right kons knil lis)
+    <pre>    (define (fold-right kons knil lis)
       (match lis
         [(,x . ,[x*]) (kons x x*)]
-        [() knil]))</pre></small>
+        [() knil]))</pre>
 
     <p>would become:</p>
 
-    <small><pre>
-    (define (fold-right kons knil lis)
+    <pre>    (define (fold-right kons knil lis)
       (match lis
         [`(,x . ,[x*]) (kons x x*)]
-        [`() knil]))</pre></small>
+        [`() knil]))</pre>
 
     <p>We don't subscribe to the view that there is an
       &ldquo;implicit&rdquo; <code>quasiquote</code> in
