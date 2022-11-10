@@ -1,0 +1,20 @@
+
+* SRFI 241: Match — Simple Pattern-Matching Syntax to Express Catamorphisms on Scheme Data
+
+** by Marc Nieper-Wißkirchen
+
+
+
+keywords: [[https://srfi.schemers.org/?keywords=pattern-matching][Pattern Matching]], [[https://srfi.schemers.org/?keywords=syntax][Syntax]]
+
+This repository hosts [[https://srfi.schemers.org/srfi-241/][SRFI 241]]: Match — Simple Pattern-Matching Syntax to Express Catamorphisms on Scheme Data, a [[https://srfi.schemers.org/][Scheme Request for Implementation]].
+
+This SRFI is in /draft/ status.
+See also [[/srfi-200/][SRFI 200: Pattern Matching]] and [[/srfi-204/][SRFI 204: Wright-Cartwright-Shinn Pattern Matcher]].
+The full documentation for this SRFI can be found in the [[https://srfi.schemers.org/srfi-241/srfi-241.html][SRFI Document]].
+
+If you'd like to participate in the discussion of this SRFI, or report issues with it, please [[https://srfi.schemers.org/srfi-241/][join the SRFI-241 mailing list]] and send your message there.
+
+Thank you.
+
+[[mailto:srfi-editors@srfi.schemers.org][The SRFI Editors]]
