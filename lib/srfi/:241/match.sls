@@ -142,7 +142,8 @@
                     #`(if (pair? #,expr)
                           (let ([e1 (car #,expr)]
                                 [e2 (cdr #,expr)])
-                            #,(mat1 (lambda () (mat2 k))))))
+                            #,(mat1 (lambda () (mat2 k))))
+                          (fail)))
                   (append pvars1 pvars2) (append catas1 catas2))))]
             [unquote
              (ill-formed-match-pattern-violation)]

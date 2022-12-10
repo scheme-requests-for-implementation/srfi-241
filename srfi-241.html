@@ -129,6 +129,13 @@
       constants are not.
     </p>
 
+    <p>Note that in R<sup>6</sup>RS matching brackets may be used in
+      place of matching parentheses and vice versa, mostly for
+      readability.  We use brackets in this specification to document
+      a recommended style.  Users of Scheme systems not supporting
+      brackets (or users who don't like brackets) can replace them
+      with parentheses throughout.</p>
+
     <pre>    (match '(a 17 37)
       [(a ,x) 1]
       [(b ,x ,y) 2]
