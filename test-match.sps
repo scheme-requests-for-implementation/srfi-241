@@ -205,6 +205,12 @@
 		      (split '(a b c d e f)))
 		  list)))
 
+;;; Extra tests
+
+(assert (match 'a
+          [(,x) #f]
+          [,_ #t]))
+
 ;; Local Variables:
 ;; mode: scheme
 ;; End:
