@@ -211,17 +211,36 @@
                                                 `(,y . ,evens))]))])
       (split '(a b c d e f)))                                          ⟹ (a c e) (b d f)</pre>
 
+    <p>This example is equivalent to the following one:</p>
+
+    <pre>    (let ([split
+           (lambda (lis)
+             (match lis
+               [() (values '() '())]
+               [(,x) (values `(,x) '())]
+               [(,x ,y . ,[split -&gt; odds evens]) (values `(,x . ,odds)
+                                                         `(,y . ,evens))]))])
+      (split '(a b c d e f)))                                                   ⟹ (a c e) (b d f)</pre>
+
     <p>
-      Sometimes it is useful to explicitly name the operator in a
-      catamorphism subpattern. Whereas <code>,[&lang;variable&rang;
+      In this case, the operator to which recursive calls are being
+      made is explicit named in the catamorphism subpattern, which
+      is <code>,[split -&gt; odds even]</code> in this case.</p>
+
+    <p>In general, <code>,[&lang;variable&rang;
       &hellip;]</code> recurs to the top of the current
-      match, <code>,[&lang;cata operator&rang; -> &lang;variable&rang;
+      match while <code>,[&lang;cata operator&rang; -> &lang;variable&rang;
       &hellip;]</code> recurs to (the result of
       evaluating) <code>&lang;cata
-      operator&rang;</code>. <code>&lang;Cata operator&rang;</code>
+      operator&rang;</code>.  <code>&lang;Cata operator&rang;</code>
       must evaluate to a procedure that accepts one argument, the
       matched value, and returns as many values as there are
-      identifiers following the <code>-></code>.</p>
+      identifiers following the <code>-&gt;</code>.</p>
+
+    <p>Explicitly naming a catamorphism operator is useful when a
+      parser has to defer parsing of a sub-input to a different parser
+      or when special parsing parameters have to be active when
+      parsing a sub-input.</p>
 
     <p>
       Here is an example
@@ -238,7 +257,7 @@
                [(- ,[x] ,[y]) (- x y)]
                [(/ ,[x] ,[y]) (/ x y)]
                [,x (assertion-violation 'simple-eval "invalid expression" x))))])
-      (simple-eval '(+ (- 0 1) (+ 2 3))))                             ⟹ 4</pre>
+      (simple-eval '(+ (- 0 1) (+ 2 3))))                                           ⟹ 4</pre>
 
     <p>The <code>match</code> form extends <code>quasiquote</code> in
       the <code>&lang;bodies&rang;</code> to an ellipsis-aware version
@@ -414,8 +433,8 @@
 
     <p>and where the <code>&lang;ellipsis&rang;</code> is the
       ellipsis <code>...</code> (in the sense
-      of <code>free-identifier=?</code>), <code>&lang;cata operators&rang;</code>
-      are expressions, and <code>&lang;pattern variable&rang;</code>
+      of <code>free-identifier=?</code>), <code>&lang;cata operator&rang;</code>
+      is an expression, and <code>&lang;pattern variable&rang;</code>
       and <code>&lang;cata variable&rang;</code> are identifiers.</p>
 
     <p>In each <code>&lang;pattern&rang;</code>,
@@ -498,42 +517,72 @@
       any expressions.</p>
 
     <p><i>Semantics:</i> A <code>match</code> expression is evaluated
-      as follows: First, the <code>&lang;input expression&rang;</code> is
-      evaluated to yield an input value.  Then, the
-      first <code>&lang;clause&rang;</code> for which the input value matches
-      its <code>&lang;pattern&rang;</code> is selected.  The environment in
-      which the <code>match</code> expression is evaluated is
-      extended by binding the pattern variables of
-      the <code>&lang;pattern&rang;</code> to fresh locations, and the values
-      that were matched against these pattern variables are stored in
-      those locations.  If <code>&lang;guard expressions&rang;</code> are present
-      in the selected clause, they are evaluated in left-to-right
-      order in the extended environment until one evaluates
-      to <code>#f</code>.  In this case, the rest of
-      the <code>&lang;clause&rang;</code> is skipped and pattern matching
-      proceeds with the next <code>&lang;clause&rang;</code>.  If
-      no <code>&lang;guard expression&rang;</code> evaluates
-      to <code>#f</code>, or if there is no <code>&lang;guard
-      expresssion&rang;</code> present, in unspecified order,
-      the <code>&lang;cata operators&rang;</code> of
-      the <code>&lang;cata clauses&rang;</code> in
-      the <code>&lang;pattern&rang;</code> of the
-      selected <code>&lang;clause&rang;</code> are evaluated in no
-      specific order in the extended environment to yield cata
-      procedures, which are then invoked on the value that was matched
-      against the <code>&lang;cata pattern&rang;</code>.  The
-      environment is extended a second time by binding
-      the <code>&lang;cata variables&rang;</code> of
-      these <code>&lang;cata patterns&rang;</code> to fresh locations,
-      and the values resulting from invoking the cata procedures are
-      stored in left-to-right order in the corresponding locations.
-      Finally, the twice-extended environment is extended a third time
-      by binding <code>quasiquote</code> to ellipsis-aware
-      quasiquotation syntax (see below),
-      the <code>&lang;body&rang;</code> of the
-      selected <code>&lang;clause&rang;</code> is evaluated in this
-      thrice-extended environment, and the resulting values from its
-      last expression are returned.</p>
+      as follows:</p>
+
+    <ul>
+      <li>
+        <p>First, the <code>&lang;input expression&rang;</code> is
+          evaluated to yield an input value.</p>
+      </li>
+      <li>
+        <p>Then, the first <code>&lang;clause&rang;</code> for which
+          the input value matches its <code>&lang;pattern&rang;</code>
+          is selected.
+        </p>
+      </li>
+      <li><p>
+          The environment in which
+          the <code>match</code> expression is evaluated is extended
+          by binding the pattern variables of
+          the <code>&lang;pattern&rang;</code> to fresh locations, and
+          the values that were matched against these pattern variables
+          are stored in those locations.
+        </p>
+      </li>
+      <li>
+        <p>
+          If <code>&lang;guard
+          expressions&rang;</code> are present in the selected clause,
+          they are evaluated in left-to-right order in the extended
+          environment until one evaluates to <code>#f</code>.  In this
+          case, the rest of the <code>&lang;clause&rang;</code> is
+          skipped and pattern matching proceeds with the
+          next <code>&lang;clause&rang;</code>.
+        </p>
+      </li>
+      <li>
+        <p>
+          If
+          no <code>&lang;guard expression&rang;</code> evaluates
+          to <code>#f</code>, or if there is no <code>&lang;guard
+          expresssion&rang;</code> present, in unspecified order,
+          the <code>&lang;cata operators&rang;</code> of
+          the <code>&lang;cata clauses&rang;</code> in
+          the <code>&lang;pattern&rang;</code> of the
+          selected <code>&lang;clause&rang;</code> are evaluated in no
+          specific order in the extended environment to yield cata
+          procedures, which are then invoked on the value that was
+          matched against the <code>&lang;cata pattern&rang;</code>.
+          The environment is extended a second time by binding
+          the <code>&lang;cata variables&rang;</code> of
+          these <code>&lang;cata patterns&rang;</code> to fresh
+          locations, and the values resulting from invoking the cata
+          procedures are stored in left-to-right order in the
+          corresponding locations.</p>
+      </li>
+      <li>
+        <p>
+          Finally, the twice-extended
+          environment is extended a third time by
+          binding <code>quasiquote</code> to ellipsis-aware
+          quasiquotation syntax (see below),
+          the <code>&lang;body&rang;</code> of the
+          selected <code>&lang;clause&rang;</code> is evaluated in
+          this thrice-extended environment, and the resulting values
+          from its last expression are returned.
+        </p>
+      </li>
+    </ul>
 
     <p>If a <code>&lang;cata pattern&rang;</code> clause is of the
       second form, the missing <code>&lang;cata operator&rang;</code>
