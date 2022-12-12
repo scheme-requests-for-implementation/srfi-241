@@ -7,7 +7,7 @@
 
 keywords: [[https://srfi.schemers.org/?keywords=pattern-matching][Pattern Matching]], [[https://srfi.schemers.org/?keywords=syntax][Syntax]]
 
-library-name: match-dfh
+library-name: match
 
 This repository hosts [[https://srfi.schemers.org/srfi-241/][SRFI 241]]: Match — Simple Pattern-Matching Syntax to Express Catamorphisms on Scheme Data, a [[https://srfi.schemers.org/][Scheme Request for Implementation]].
 
