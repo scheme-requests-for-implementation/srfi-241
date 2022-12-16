@@ -155,7 +155,7 @@
         (match x
           [(program ,[Stmt -> s*] ... ,[(Expr '()) -> e])
            `(begin ,s* ... ,e)]
-          [,x ( 'parse "invalid program" x)])))
+          [,x (assertion-violation 'parse "invalid program" x)])))
     (define Stmt
       (lambda (x)
         (match x
