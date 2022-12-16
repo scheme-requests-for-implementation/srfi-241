@@ -211,6 +211,13 @@
           [(,x) #f]
           [,_ #t]))
 
+(assert (match 'else
+          [else #t]))
+
+(assert (guard (c [(assertion-violation? c) #t])
+          (match 'whatever
+            [else #f])))
+
 ;; Local Variables:
 ;; mode: scheme
 ;; End:
