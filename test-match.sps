@@ -155,7 +155,7 @@
         (match x
           [(program ,[Stmt -> s*] ... ,[(Expr '()) -> e])
            `(begin ,s* ... ,e)]
-          [,x ( 'parse "invalid program" x)])))
+          [,x (assertion-violation 'parse "invalid program" x)])))
     (define Stmt
       (lambda (x)
         (match x
@@ -210,6 +210,13 @@
 (assert (match 'a
           [(,x) #f]
           [,_ #t]))
+
+(assert (match 'else
+          [else #t]))
+
+(assert (guard (c [(assertion-violation? c) #t])
+          (match 'whatever
+            [else #f])))
 
 ;; Local Variables:
 ;; mode: scheme

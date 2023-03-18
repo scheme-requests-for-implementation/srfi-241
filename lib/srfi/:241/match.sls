@@ -294,7 +294,7 @@
            (lambda (cl rest)
              #`(let ([fail (lambda () #,rest)])
                  #,(gen-clause k cl)))
-           #'(if #f #f)
+           #'(assertion-violation 'who "value does not match" e)
            cl*)))
       (syntax-case stx ()
         [(k expr cl ...)
