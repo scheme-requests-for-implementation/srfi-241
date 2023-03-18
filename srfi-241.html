@@ -13,6 +13,12 @@
       pre {
 	  font-size: smaller;
       }
+      .keyword {
+          font-weight: bold;
+      }
+      .metavar {
+          font-family: serif;
+      }
     </style>
   </head>
   <body>
@@ -64,7 +70,7 @@
       described in this SRFI.  Contrary to the other two matchers, it
       has a simple pattern language.  It's strength lies in its
       catamorphism feature to perform recursion automatically.  It is
-      called <code><span style="font-weight: bold">match</span></code>.
+      called <code><span class="keyword">match</span></code>.
     </p>
 
     <p>
@@ -77,14 +83,14 @@
       called <em>catamorphisms</em>.
     </p>
 
-    <p>In some sense, <code><span style="font-weight: bold">match</span></code> syntactically expresses the
+    <p>In some sense, <code><span class="keyword">match</span></code> syntactically expresses the
       general catamorphism on Scheme datums.  For example, the
       aforementioned <code>fold-right</code> procedure (restricted to
       a single list argument) can be implemented as follows:
     </p>
 
-    <pre>    (<span style="font-weight: bold">define</span> (fold-right kons knil lis)
-      (<span style="font-weight: bold">match</span> lis
+    <pre>    (<span class="keyword">define</span> (fold-right kons knil lis)
+      (<span class="keyword">match</span> lis
         [(,x . ,[x*]) (kons x x*)]
         [() knil]))</pre>
 
@@ -97,23 +103,23 @@
 
     <h3>Examples</h3>
 
-    <p>A <code><span style="font-weight: bold">match</span></code> expression evaluates an input expression
+    <p>A <code><span class="keyword">match</span></code> expression evaluates an input expression
       producing an input value.  This value is then matched against
-      the patterns of a <code><span style="font-weight: bold">match</span></code> expression much as the
+      the patterns of a <code><span class="keyword">match</span></code> expression much as the
       input of a <code>case</code> expression is matched against
       datums.</p>
 
     <p>The general form of a match expression is</p>
 
-    <p><code>(<span style="font-weight: bold">match</span> &lang;<span style="font-family: serif">expr</span>&rang; &lang;<span style="font-family: serif">clause</span>&rang; &hellip;)</code></p>
+    <p><code>(<span class="keyword">match</span> &lang;<span class="metavar">expr</span>&rang; &lang;<span class="metavar">clause</span>&rang; &hellip;)</code></p>
 
-    <p>where <code>&lang;<span style="font-family: serif">expr</span>&rang;</code> is the input expression to match and
+    <p>where <code>&lang;<span class="metavar">expr</span>&rang;</code> is the input expression to match and
       each clause has one of the following two forms:</p>
 
-    <p><code>[&lang;<span style="font-family: serif">pattern</span>&rang; (<span style="font-weight: bold">guard</span>
-        &lang;<span style="font-family: serif">guard expression</span>&rang; &hellip;) &lang;<span style="font-family: serif">body</span>&rang;]</code></p>
+    <p><code>[&lang;<span class="metavar">pattern</span>&rang; (<span class="keyword">guard</span>
+        &lang;<span class="metavar">guard expression</span>&rang; &hellip;) &lang;<span class="metavar">body</span>&rang;]</code></p>
 
-    <p><code>[&lang;<span style="font-family: serif">pattern</span>&rang; &lang;<span style="font-family: serif">body</span>&rang;]</code></p>
+    <p><code>[&lang;<span class="metavar">pattern</span>&rang; &lang;<span class="metavar">body</span>&rang;]</code></p>
 
     <p>
       As with <code>case</code>, the input expression is evaluated to
@@ -122,7 +128,7 @@
       selected clause is evaluated, and the values of the last
       expression in the body are returned.  An input value matches a
       clause if it fits the clause's pattern and the
-      <code>&lang;<span style="font-family: serif">guard expressions</span>&rang;</code>, if any, evaluate to a
+      <code>&lang;<span class="metavar">guard expressions</span>&rang;</code>, if any, evaluate to a
       true value.  Patterns may contain symbolic constants, which must
       match exactly, and pattern variables, which match any
       input.  Pattern variables are prefixed by commas; symbolic
@@ -136,7 +142,7 @@
       brackets (or users who don't like brackets) can replace them
       with parentheses throughout.</p>
 
-    <pre>    (<span style="font-weight: bold">match</span> '(a 17 37)
+    <pre>    (<span class="keyword">match</span> '(a 17 37)
       [(a ,x) 1]
       [(b ,x ,y) 2]
       [(a ,x ,y) 3])    ⟹ 3</pre>
@@ -148,63 +154,63 @@
     <p>In the output expressions, the values of the pattern variables
     are bound to the corresponding pieces of input.</p>
 
-    <pre>    (<span style="font-weight: bold">match</span> '(a 17 37)
+    <pre>    (<span class="keyword">match</span> '(a 17 37)
       [(a ,x) (- x)]
       [(b ,x ,y) (+ x y)]
       [(a ,x ,y) (* x y)])   ⟹ 629</pre>
 
-    <p>When followed by an ellipsis (<code><span style="font-weight: bold">...</span></code>), a pattern
+    <p>When followed by an ellipsis (<code><span class="keyword">...</span></code>), a pattern
       variable represents a sequence of input values.
 
-    <pre>    (<span style="font-weight: bold">match</span> '(a 17 37) [(a ,x* <span style="font-weight: bold">...</span>) x*])   ⟹ (17 37)</pre>
+    <pre>    (<span class="keyword">match</span> '(a 17 37) [(a ,x* <span class="keyword">...</span>) x*])   ⟹ (17 37)</pre>
 
     <p>Ellipses can follow a structured pattern containing one or more
       pattern variables.</p>
 
-    <pre>    (<span style="font-weight: bold">match</span> '(<span style="font-weight: bold">begin</span> (1 5) (2 6) (3 7) (4 8))
-      [(<span style="font-weight: bold">begin</span> (,x* ,y*) <span style="font-weight: bold">...</span>) (append x* y*)])   ⟹ (1 2 3 4 5 6 7 8)</pre>
+    <pre>    (<span class="keyword">match</span> '(<span class="keyword">begin</span> (1 5) (2 6) (3 7) (4 8))
+      [(<span class="keyword">begin</span> (,x* ,y*) <span class="keyword">...</span>) (append x* y*)])   ⟹ (1 2 3 4 5 6 7 8)</pre>
 
     <p>Ellipses can be nested, producing sequences of sequences of values.</p>
 
-    <pre>    (<span style="font-weight: bold">match</span> '((a b c d) (e f g) (h i) (j))
-      [((,x* ,y** <span style="font-weight: bold">...</span>) <span style="font-weight: bold">...</span>) (list x* y**)])   ⟹ ((a e h j) ((b c d) (f g) (i) ()))</pre>
+    <pre>    (<span class="keyword">match</span> '((a b c d) (e f g) (h i) (j))
+      [((,x* ,y** <span class="keyword">...</span>) <span class="keyword">...</span>) (list x* y**)])   ⟹ ((a e h j) ((b c d) (f g) (i) ()))</pre>
 
     <p>Recursion is frequently required while processing an input
-      value with <code><span style="font-weight: bold">match</span></code>. Here, a procedure returning the
+      value with <code><span class="keyword">match</span></code>. Here, a procedure returning the
       length of a list is defined.</p>
 
-    <pre>    (<span style="font-weight: bold">letrec</span>
+    <pre>    (<span class="keyword">letrec</span>
         ([len
-          (<span style="font-weight: bold">lambda</span> (lst)
-            (<span style="font-weight: bold">match</span> lst
+          (<span class="keyword">lambda</span> (lst)
+            (<span class="keyword">match</span> lst
               [() 0]
-              [(,x ,x* <span style="font-weight: bold">...</span>) (+ 1 (len x*))]))])
+              [(,x ,x* <span class="keyword">...</span>) (+ 1 (len x*))]))])
       (len '(a b c d)))                           ⟹ 4</pre>
 
     <p>
       A simpler version of the above uses the catamorphism feature of
-      <code><span style="font-weight: bold">match</span></code>. If a pattern variable is written as
-      <code>,[<var>var</var>]</code>, <code><span style="font-weight: bold">match</span></code> recurs on the
+      <code><span class="keyword">match</span></code>. If a pattern variable is written as
+      <code>,[<var>var</var>]</code>, <code><span class="keyword">match</span></code> recurs on the
       matching subpart of the input before evaluating the output
       expressions of the clause.
 
-    <pre>    (<span style="font-weight: bold">let</span> ([len
-           (<span style="font-weight: bold">lambda</span> (lst)
-             (<span style="font-weight: bold">match</span> lst
+    <pre>    (<span class="keyword">let</span> ([len
+           (<span class="keyword">lambda</span> (lst)
+             (<span class="keyword">match</span> lst
                [() 0]
                [(,x . ,[y]) (+ 1 y)]))])
       (len '(a b c d)))                      ⟹ 4</pre>
 
-    <p>In some cases, <code><span style="font-weight: bold">match</span></code> will need to return multiple
+    <p>In some cases, <code><span class="keyword">match</span></code> will need to return multiple
       values. The catamorphism syntax can be used to receive multiple
       values. When making implicit recursive calls using the
       catamorphism syntax, zero or more variables between the
       parentheses can be included, each representing one of the
       expected return values.</p>
 
-    <pre>    (<span style="font-weight: bold">let</span> ([split
-           (<span style="font-weight: bold">lambda</span> (lis)
-             (<span style="font-weight: bold">match</span> lis
+    <pre>    (<span class="keyword">let</span> ([split
+           (<span class="keyword">lambda</span> (lis)
+             (<span class="keyword">match</span> lis
                [() (values '() '())]
                [(,x) (values `(,x) '())]
                [(,x ,y . ,[odds evens]) (values `(,x . ,odds)
@@ -213,29 +219,29 @@
 
     <p>This example is equivalent to the following one:</p>
 
-    <pre>    (<span style="font-weight: bold">let</span> ([split
-           (<span style="font-weight: bold">lambda</span> (lis)
-             (<span style="font-weight: bold">match</span> lis
+    <pre>    (<span class="keyword">let</span> ([split
+           (<span class="keyword">lambda</span> (lis)
+             (<span class="keyword">match</span> lis
                [() (values '() '())]
                [(,x) (values `(,x) '())]
-               [(,x ,y . ,[split <span style="font-weight: bold">-&gt;</span> odds evens]) (values `(,x . ,odds)
+               [(,x ,y . ,[split <span class="keyword">-&gt;</span> odds evens]) (values `(,x . ,odds)
                                                          `(,y . ,evens))]))])
       (split '(a b c d e f)))                                                   ⟹ (a c e) (b d f)</pre>
 
     <p>
       In this case, the operator to which recursive calls are being
       made is explicit named in the catamorphism subpattern, which
-      is <code>,[split <span style="font-weight: bold">-&gt;</span> odds even]</code> in this case.</p>
+      is <code>,[split <span class="keyword">-&gt;</span> odds even]</code> in this case.</p>
 
-    <p>In general, <code>,[&lang;<span style="font-family: serif">variable</span>&rang;
+    <p>In general, <code>,[&lang;<span class="metavar">variable</span>&rang;
       &hellip;]</code> recurs to the top of the current
-      match while <code>,[&lang;<span style="font-family: serif">cata operator</span>&rang; <span style="font-weight: bold"><span style="font-weight: bold">-&gt;</span></span> &lang;<span style="font-family: serif">variable</span>&rang;
+      match while <code>,[&lang;<span class="metavar">cata operator</span>&rang; <span class="keyword"><span class="keyword">-&gt;</span></span> &lang;<span class="metavar">variable</span>&rang;
       &hellip;]</code> recurs to (the result of
-      evaluating) <code>&lang;<span style="font-family: serif">cata
-      operator</span>&rang;</code>.  <code>&lang;<span style="font-family: serif">Cata operator</span>&rang;</code>
+      evaluating) <code>&lang;<span class="metavar">cata
+      operator</span>&rang;</code>.  <code>&lang;<span class="metavar">Cata operator</span>&rang;</code>
       must evaluate to a procedure that accepts one argument, the
       matched value, and returns as many values as there are
-      identifiers following the <code><span style="font-weight: bold">-&gt;</span></code>.</p>
+      identifiers following the <code><span class="keyword">-&gt;</span></code>.</p>
 
     <p>Explicitly naming a catamorphism operator is useful when a
       parser has to defer parsing of a sub-input to a different parser
@@ -248,38 +254,38 @@
       of a catch-all clause.
     </p>
 
-    <pre>    (<span style="font-weight: bold">let</span> ([simple-eval
-           (<span style="font-weight: bold">lambda</span> (x)
-             (<span style="font-weight: bold">match</span> x
-               [,i (<span style="font-weight: bold">guard</span> (integer? i)) i]
-               [(+ ,[x*] <span style="font-weight: bold">...</span>) (apply + x*)]
-               [(* ,[x*] <span style="font-weight: bold">...</span>) (apply * x*)]
+    <pre>    (<span class="keyword">let</span> ([simple-eval
+           (<span class="keyword">lambda</span> (x)
+             (<span class="keyword">match</span> x
+               [,i (<span class="keyword">guard</span> (integer? i)) i]
+               [(+ ,[x*] <span class="keyword">...</span>) (apply + x*)]
+               [(* ,[x*] <span class="keyword">...</span>) (apply * x*)]
                [(- ,[x] ,[y]) (- x y)]
                [(/ ,[x] ,[y]) (/ x y)]
                [,x (assertion-violation 'simple-eval "invalid expression" x))))])
       (simple-eval '(+ (- 0 1) (+ 2 3))))                                           ⟹ 4</pre>
 
-    <p>The <code><span style="font-weight: bold">match</span></code> form extends <code><span style="font-weight: bold">quasiquote</span></code> in
-      the <code>&lang;<span style="font-family: serif">bodies</span>&rang;</code> to an ellipsis-aware version
+    <p>The <code><span class="keyword">match</span></code> form extends <code><span class="keyword">quasiquote</span></code> in
+      the <code>&lang;<span class="metavar">bodies</span>&rang;</code> to an ellipsis-aware version
       that allows ellipses to be used in place
-      of <code><span style="font-weight: bold">unquote-splicing</span></code>, which often leads to more
+      of <code><span class="keyword">unquote-splicing</span></code>, which often leads to more
       readable code.  Consider the following transformer
       of <code>let</code> forms in a Scheme-like language:</p>
 
-    <pre>    (<span style="font-weight: bold">define</span> translate
-      (<span style="font-weight: bold">lambda</span> (x)
-        (<span style="font-weight: bold">match</span> x
-          [(<span style="font-weight: bold">let</span> ([,var* ,expr*] <span style="font-weight: bold">...</span>) ,body ,body* <span style="font-weight: bold">...</span>)
-           `((<span style="font-weight: bold">lambda</span> ,var* ,body ,@body*) ,@expr*)]
+    <pre>    (<span class="keyword">define</span> translate
+      (<span class="keyword">lambda</span> (x)
+        (<span class="keyword">match</span> x
+          [(<span class="keyword">let</span> ([,var* ,expr*] <span class="keyword">...</span>) ,body ,body* <span class="keyword">...</span>)
+           `((<span class="keyword">lambda</span> ,var* ,body ,@body*) ,@expr*)]
           [,x (assertion-violation 'translate "invalid expression" x)])))</pre>
 
     <p>This can be rewritten as follows:</p>
 
-    <pre>    (<span style="font-weight: bold">define</span> translate
-      (<span style="font-weight: bold">lambda</span> (x)
-      (<span style="font-weight: bold">match</span> x
-        [(<span style="font-weight: bold">let</span> ((,var* ,expr*) <span style="font-weight: bold">...</span>) ,body ,body* <span style="font-weight: bold">...</span>)
-         `((<span style="font-weight: bold">lambda</span> ,var* ,body ,body* <span style="font-weight: bold">...</span>) ,expr* <span style="font-weight: bold">...</span>)]
+    <pre>    (<span class="keyword">define</span> translate
+      (<span class="keyword">lambda</span> (x)
+      (<span class="keyword">match</span> x
+        [(<span class="keyword">let</span> ((,var* ,expr*) <span class="keyword">...</span>) ,body ,body* <span class="keyword">...</span>)
+         `((<span class="keyword">lambda</span> ,var* ,body ,body* <span class="keyword">...</span>) ,expr* <span class="keyword">...</span>)]
         [,x (assertion-violation 'translate "invalid expression" x)])))</pre>
 
     <p>The better readability is, in particular, illustrated by a
@@ -289,13 +295,13 @@
       allow an implicit <code>begin</code> in each right-hand-side
       expression.</p>
 
-    <pre>    (<span style="font-weight: bold">define</span> (f x)
-      (<span style="font-weight: bold">match</span> x
-        [(<span style="font-weight: bold">let</span> ([,x ,e1 <span style="font-weight: bold">...</span>] <span style="font-weight: bold">...</span>) ,b1 ,b2 <span style="font-weight: bold">...</span>)
-         `((<span style="font-weight: bold">lambda</span> (,x <span style="font-weight: bold">...</span>) ,b1 ,b2 <span style="font-weight: bold">...</span>)
-           (<span style="font-weight: bold">begin</span> ,e1 <span style="font-weight: bold">...</span>) <span style="font-weight: bold">...</span>)]))</pre>
+    <pre>    (<span class="keyword">define</span> (f x)
+      (<span class="keyword">match</span> x
+        [(<span class="keyword">let</span> ([,x ,e1 <span class="keyword">...</span>] <span class="keyword">...</span>) ,b1 ,b2 <span class="keyword">...</span>)
+         `((<span class="keyword">lambda</span> (,x <span class="keyword">...</span>) ,b1 ,b2 <span class="keyword">...</span>)
+           (<span class="keyword">begin</span> ,e1 <span class="keyword">...</span>) <span class="keyword">...</span>)]))</pre>
 
-    <p>The basic usage of (the ellipsis-aware) <code><span style="font-weight: bold">quasiquote</span></code> is the same as in R<sup>6</sup>RS:</p>
+    <p>The basic usage of (the ellipsis-aware) <code><span class="keyword">quasiquote</span></code> is the same as in R<sup>6</sup>RS:</p>
 
     <pre>    `(list ,(+ 1 2) 4)   &xrArr; (list 3 4)</pre>
 
@@ -303,15 +309,15 @@
 
     <pre>    `(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b)   &xrArr; (a 3 4 5 6 b)</pre>
 
-    <p>The extension to <code><span style="font-weight: bold">quasiquote</span></code> allows ellipses to be
-    used in place of <code><span style="font-weight: bold">unquote-splicing</span></code> (<code>,@</code>)
+    <p>The extension to <code><span class="keyword">quasiquote</span></code> allows ellipses to be
+    used in place of <code><span class="keyword">unquote-splicing</span></code> (<code>,@</code>)
       to piece together the output form.</p>
 
-    <pre>    `(a ,(+ 1 2) ,(map abs '(4 -5 6)) <span style="font-weight: bold">...</span> b)   &xrArr; (a 3 4 5 6 b)</pre>
+    <pre>    `(a ,(+ 1 2) ,(map abs '(4 -5 6)) <span class="keyword">...</span> b)   &xrArr; (a 3 4 5 6 b)</pre>
 
     <p>Within each subform followed by an ellipsis, each comma-prefixed item must be a list and all such items within the same subform must have the same length.</p>
 
-    <pre>    `((,'(1 2 3) . ,'(a b c)) <span style="font-weight: bold">...</span>)   &xrArr; ((1 . a) (2 . b) (3 . c))</pre>
+    <pre>    `((,'(1 2 3) . ,'(a b c)) <span class="keyword">...</span>)   &xrArr; ((1 . a) (2 . b) (3 . c))</pre>
 
     <p>A subform followed by an ellipsis may be contained
       within a larger subform that is also followed by an ellipsis. In
@@ -321,29 +327,29 @@
       requirement generalizes to comma-prefixed items nested within more
       than two levels of ellipsis-followed subforms.</p>
 
-    <pre>    `(((a ,'((x 1) (x 2) (x 3))) <span style="font-weight: bold">...</span>) <span style="font-weight: bold">...</span>)   &xrArr; (((a x) (a 1)) ((a x) (a 2)) ((a x) (a 3)))</pre>
+    <pre>    `(((a ,'((x 1) (x 2) (x 3))) <span class="keyword">...</span>) <span class="keyword">...</span>)   &xrArr; (((a x) (a 1)) ((a x) (a 2)) ((a x) (a 3)))</pre>
 
     <p>In the output, a subform may be followed directly by two or
       more ellipses; the requirements are the same as for nested
       ellipses, but the result is flattened rather than nested.</p>
 
-    <pre>    `((a ,'((x 1) (x 2) (x 3))) <span style="font-weight: bold">...</span> <span style="font-weight: bold">...</span>)   &xrArr; ((a x) (a 1) (a x) (a 2) (a x) (a 3))</pre>
+    <pre>    `((a ,'((x 1) (x 2) (x 3))) <span class="keyword">...</span> <span class="keyword">...</span>)   &xrArr; ((a x) (a 1) (a x) (a 2) (a x) (a 3))</pre>
 
-    <p>Ellipses can also follow subforms containing items prefixed by <code><span style="font-weight: bold">unquote-splicing</span></code> (<code>,@</code>).</p>
+    <p>Ellipses can also follow subforms containing items prefixed by <code><span class="keyword">unquote-splicing</span></code> (<code>,@</code>).</p>
 
-    <pre>    `((a ,@'((x 1) (x 2) (x 3))) <span style="font-weight: bold">...</span>)   &xrArr; ((a x 1) (a x 2) (a x 3))</pre>
+    <pre>    `((a ,@'((x 1) (x 2) (x 3))) <span class="keyword">...</span>)   &xrArr; ((a x 1) (a x 2) (a x 3))</pre>
 
-    <p>A subform of the form <code>(<span style="font-weight: bold">...</span> &lang;<span style="font-family: serif">form</span>&rang;)</code> is
-    identical to <code>&lang;<span style="font-family: serif">form</span>&rang;</code>, except that ellipses
+    <p>A subform of the form <code>(<span class="keyword">...</span> &lang;<span class="metavar">form</span>&rang;)</code> is
+    identical to <code>&lang;<span class="metavar">form</span>&rang;</code>, except that ellipses
       in the subform have no special meaning.</p>
 
-    <pre>    `(<span style="font-weight: bold">...</span> (,'(1 2 3) <span style="font-weight: bold">...</span>))   &xrArr; ((1 2 3) <span style="font-weight: bold">...</span>)</pre>
+    <pre>    `(<span class="keyword">...</span> (,'(1 2 3) <span class="keyword">...</span>))   &xrArr; ((1 2 3) <span class="keyword">...</span>)</pre>
 
     <p>Substitutions are made only for unquoted components appearing
     at the same nesting level as the outermost quasiquote.</p>
 
-    <pre>    `(a `(b ,(list 1 2) <span style="font-weight: bold">...</span> ,(foo ,(list 1 3) <span style="font-weight: bold">...</span> d) e) f)
-       &xrArr; (a `(b ,(list 1 2) <span style="font-weight: bold">...</span> ,(foo 1 3 d) e) f)</pre>
+    <pre>    `(a `(b ,(list 1 2) <span class="keyword">...</span> ,(foo ,(list 1 3) <span class="keyword">...</span> d) e) f)
+       &xrArr; (a `(b ,(list 1 2) <span class="keyword">...</span> ,(foo 1 3 d) e) f)</pre>
 
     <h3>Relation to the (withdrawn) SRFI 204</h3>
 
@@ -375,7 +381,7 @@
 
     <p>
       For historical reasons, both the matcher described here and in
-      SRFI 204 are called <code><span style="font-weight: bold">match</span></code>.  This specification does
+      SRFI 204 are called <code><span class="keyword">match</span></code>.  This specification does
       not change the established name.  Fortunately, when reading
       code, there is virtually no danger of confusion.  Pattern
       variables in the matcher described here are all unquoted and
@@ -405,167 +411,167 @@
       to <code>syntax-rules</code> and <code>syntax-case</code>, which
       is described here.</p>
 
-    <p>A <code>&lang;<span style="font-family: serif">pattern</span>&rang;</code> has one of the following forms:</p>
+    <p>A <code>&lang;<span class="metavar">pattern</span>&rang;</code> has one of the following forms:</p>
 
-    <p><code>(&lang;<span style="font-family: serif">pattern</span>&rang; &lang;<span style="font-family: serif">ellipsis</span>&rang; . &lang;<span style="font-family: serif">pattern</span>&rang;)</code></p>
+    <p><code>(&lang;<span class="metavar">pattern</span>&rang; &lang;<span class="metavar">ellipsis</span>&rang; . &lang;<span class="metavar">pattern</span>&rang;)</code></p>
 
-    <p><code>(&lang;<span style="font-family: serif">pattern</span>&rang; . &lang;<span style="font-family: serif">pattern</span>&rang;)</code></p>
+    <p><code>(&lang;<span class="metavar">pattern</span>&rang; . &lang;<span class="metavar">pattern</span>&rang;)</code></p>
 
     <p><code>()</code></p>
 
-    <p><code>#(&lang;<span style="font-family: serif">pattern</span>&rang; &hellip; &lang;<span style="font-family: serif">pattern</span>&rang; &lang;<span style="font-family: serif">ellipsis</span>&rang; &lang;<span style="font-family: serif">pattern</span>&rang; &hellip;)</code></p>
+    <p><code>#(&lang;<span class="metavar">pattern</span>&rang; &hellip; &lang;<span class="metavar">pattern</span>&rang; &lang;<span class="metavar">ellipsis</span>&rang; &lang;<span class="metavar">pattern</span>&rang; &hellip;)</code></p>
 
-    <p><code>,<span style="font-weight: bold">_</span></code></p>
+    <p><code>,<span class="keyword">_</span></code></p>
 
-    <p><code>,&lang;<span style="font-family: serif">pattern variable</span>&rang;</code></p>
+    <p><code>,&lang;<span class="metavar">pattern variable</span>&rang;</code></p>
 
-    <p><code>&lang;<span style="font-family: serif">cata pattern</span>&rang;</code></p>
+    <p><code>&lang;<span class="metavar">cata pattern</span>&rang;</code></p>
 
-    <p><code>&lang;<span style="font-family: serif">symbol</span>&rang;</code></p>
+    <p><code>&lang;<span class="metavar">symbol</span>&rang;</code></p>
 
-    <p><code>&lang;<span style="font-family: serif">constant</span>&rang;</code></p>
+    <p><code>&lang;<span class="metavar">constant</span>&rang;</code></p>
 
-    <p>where a <code>&lang;<span style="font-family: serif">cata pattern</span>&rang;</code> has one of the following forms:</p>
+    <p>where a <code>&lang;<span class="metavar">cata pattern</span>&rang;</code> has one of the following forms:</p>
 
-    <p><code>,[&lang;<span style="font-family: serif">cata operator</span>&rang; <span style="font-weight: bold">-&gt;</span> &lang;<span style="font-family: serif">cata variable</span>&rang; …]</code></p>
+    <p><code>,[&lang;<span class="metavar">cata operator</span>&rang; <span class="keyword">-&gt;</span> &lang;<span class="metavar">cata variable</span>&rang; …]</code></p>
 
-    <p><code>,[&lang;<span style="font-family: serif">cata variable</span>&rang; &hellip;]</code></p>
+    <p><code>,[&lang;<span class="metavar">cata variable</span>&rang; &hellip;]</code></p>
 
-    <p>and where the <code>&lang;<span style="font-family: serif">ellipsis</span>&rang;</code> is the
-      ellipsis <code><span style="font-weight: bold">...</span></code> (in the sense
-      of <code>free-identifier=?</code>), <code>&lang;<span style="font-family: serif">cata operator</span>&rang;</code>
-      is an expression, and <code>&lang;<span style="font-family: serif">pattern variable</span>&rang;</code>
-      and <code>&lang;<span style="font-family: serif">cata variable</span>&rang;</code> are identifiers.</p>
+    <p>and where the <code>&lang;<span class="metavar">ellipsis</span>&rang;</code> is the
+      ellipsis <code><span class="keyword">...</span></code> (in the sense
+      of <code>free-identifier=?</code>), <code>&lang;<span class="metavar">cata operator</span>&rang;</code>
+      is an expression, and <code>&lang;<span class="metavar">pattern variable</span>&rang;</code>
+      and <code>&lang;<span class="metavar">cata variable</span>&rang;</code> are identifiers.</p>
 
-    <p>In each <code>&lang;<span style="font-family: serif">pattern</span>&rang;</code>,
-      the <code>&lang;<span style="font-family: serif">pattern variables</span>&rang;</code>
-      and <code>&lang;<span style="font-family: serif">cata variables</span>&rang;</code> must be pairwise
+    <p>In each <code>&lang;<span class="metavar">pattern</span>&rang;</code>,
+      the <code>&lang;<span class="metavar">pattern variables</span>&rang;</code>
+      and <code>&lang;<span class="metavar">cata variables</span>&rang;</code> must be pairwise
       disjoint (in the sense
-      of <code>bound-identifier=?</code>).  <code>&lang;<span style="font-family: serif">Pattern
+      of <code>bound-identifier=?</code>).  <code>&lang;<span class="metavar">Pattern
       variables</span>&rang;</code> must not
-      be <code><span style="font-weight: bold">...</span></code>, <code><span style="font-weight: bold">_</span></code>, or <code><span style="font-weight: bold">unquote</span></code> (in
+      be <code><span class="keyword">...</span></code>, <code><span class="keyword">_</span></code>, or <code><span class="keyword">unquote</span></code> (in
       the sense of <code>free-identifier=?)</code>.</p>
 
     <p>Patterns match Scheme values by the following rules:</p>
 
-    <p>A pattern of the form <code>(&lang;<span style="font-family: serif">pattern<sub>1</sub></span>&rang;
-        &lang;<span style="font-family: serif">ellipsis</span>&rang; . &lang;<span style="font-family: serif">pattern<sub>2</sub></span>&rang;)</code> matches a
-        dotted list if <code>&lang;<span style="font-family: serif">pattern<sub>1</sub></span>&rang;</code>
+    <p>A pattern of the form <code>(&lang;<span class="metavar">pattern<sub>1</sub></span>&rang;
+        &lang;<span class="metavar">ellipsis</span>&rang; . &lang;<span class="metavar">pattern<sub>2</sub></span>&rang;)</code> matches a
+        dotted list if <code>&lang;<span class="metavar">pattern<sub>1</sub></span>&rang;</code>
         matches each proper list element
-      and <code>&lang;<span style="font-family: serif">pattern<sub>2</sub></span>&rang;</code> matches the tail of the dotted list.</p>
+      and <code>&lang;<span class="metavar">pattern<sub>2</sub></span>&rang;</code> matches the tail of the dotted list.</p>
 
-    <p>A pattern of the form <code>(&lang;<span style="font-family: serif">pattern<sub>1</sub></span>&rang;
-        . &lang;<span style="font-family: serif">pattern<sub>2</sub></span>&rang;)</code> matches a
-        pair if <code>&lang;<span style="font-family: serif">pattern<sub>1</sub></span>&rang;</code>
+    <p>A pattern of the form <code>(&lang;<span class="metavar">pattern<sub>1</sub></span>&rang;
+        . &lang;<span class="metavar">pattern<sub>2</sub></span>&rang;)</code> matches a
+        pair if <code>&lang;<span class="metavar">pattern<sub>1</sub></span>&rang;</code>
         matches the car
-      and <code>&lang;<span style="font-family: serif">pattern<sub>2</sub></span>&rang;</code> matches the cdr of the pair.</p>
+      and <code>&lang;<span class="metavar">pattern<sub>2</sub></span>&rang;</code> matches the cdr of the pair.</p>
 
     <p>A pattern of the form <code>()</code> matches the empty list.</p>
 
-    <p>A pattern of the form <code>#(&lang;<span style="font-family: serif">pattern<sub>1</sub></span>&rang; &hellip;
-    &lang;<span style="font-family: serif">pattern<sub><var>k</var></sub></span>&rang; &lang;<span style="font-family: serif">pattern<sub>e</sub></span>&rang;
-    &lang;<span style="font-family: serif">ellipsis</span>&rang; &lang;<span style="font-family: serif">pattern<sub><var>m</var>+1</sub></span>&rang; &hellip;
-	&lang;<span style="font-family: serif">pattern<sub><var>n</var></sub></span>&rang;)</code>
+    <p>A pattern of the form <code>#(&lang;<span class="metavar">pattern<sub>1</sub></span>&rang; &hellip;
+    &lang;<span class="metavar">pattern<sub><var>k</var></sub></span>&rang; &lang;<span class="metavar">pattern<sub>e</sub></span>&rang;
+    &lang;<span class="metavar">ellipsis</span>&rang; &lang;<span class="metavar">pattern<sub><var>m</var>+1</sub></span>&rang; &hellip;
+	&lang;<span class="metavar">pattern<sub><var>n</var></sub></span>&rang;)</code>
       matches a vector of <var>n</var> or more elements whose first <var>k</var> elements match
-      <code>&lang;<span style="font-family: serif">pattern<sub>1</sub></span>&rang;</code>
-      through <code>&lang;<span style="font-family: serif">pattern<sub><var>k</var></sub></span>&rang;</code>,
+      <code>&lang;<span class="metavar">pattern<sub>1</sub></span>&rang;</code>
+      through <code>&lang;<span class="metavar">pattern<sub><var>k</var></sub></span>&rang;</code>,
       whose next <var>m</var>&minus;<var>k</var> elements each match
-      <code>&lang;<span style="font-family: serif">pattern<sub>e</sub></span>&rang;</code>, and whose remaining <var>n</var>&minus;<var>m</var> elements match
-      <code>&lang;<span style="font-family: serif">pattern<sub><var>m</var>+1</sub></span>&rang;</code> through <code>&lang;<span style="font-family: serif">pattern<sub><var>n</var></sub></span>&rang;</code>.
+      <code>&lang;<span class="metavar">pattern<sub>e</sub></span>&rang;</code>, and whose remaining <var>n</var>&minus;<var>m</var> elements match
+      <code>&lang;<span class="metavar">pattern<sub><var>m</var>+1</sub></span>&rang;</code> through <code>&lang;<span class="metavar">pattern<sub><var>n</var></sub></span>&rang;</code>.
     </p>
 
-    <p>A pattern of the form <code>,<span style="font-weight: bold">_</span></code> matches an arbitrary
+    <p>A pattern of the form <code>,<span class="keyword">_</span></code> matches an arbitrary
       Scheme value.</p>
 
-    <p>A pattern of the form <code>,&lang;<span style="font-family: serif">pattern variable</span>&rang;</code> matches an arbitrary Scheme value.</p>
+    <p>A pattern of the form <code>,&lang;<span class="metavar">pattern variable</span>&rang;</code> matches an arbitrary Scheme value.</p>
 
-    <p>A <code>&lang;<span style="font-family: serif">cata pattern</span>&rang;</code> matches an arbitrary Scheme value.</p>
+    <p>A <code>&lang;<span class="metavar">cata pattern</span>&rang;</code> matches an arbitrary Scheme value.</p>
 
-    <p>A pattern of the form <code>&lang;<span style="font-family: serif">symbol</span>&rang;</code> matches a symbol
-      with the same name as <code>&lang;<span style="font-family: serif">symbol</span>&rang;</code>.</p>
+    <p>A pattern of the form <code>&lang;<span class="metavar">symbol</span>&rang;</code> matches a symbol
+      with the same name as <code>&lang;<span class="metavar">symbol</span>&rang;</code>.</p>
 
-    <p>A pattern of the form <code>&lang;<span style="font-family: serif">constant</span>&rang;</code> match a value
+    <p>A pattern of the form <code>&lang;<span class="metavar">constant</span>&rang;</code> match a value
       that is equal (in the sense of <code>equal?</code>) to the
-      literal datum <code>&lang;<span style="font-family: serif">constant</span>&rang;</code>.</p>
+      literal datum <code>&lang;<span class="metavar">constant</span>&rang;</code>.</p>
 
     <h3>Match</h3>
 
     <p>The following syntax together with the auxiliary
-      syntax <code><span style="font-weight: bold">unquote</span></code>, <code><span style="font-weight: bold">unquote-splicing</span></code>,
-      <code><span style="font-weight: bold">...</span></code>, <code><span style="font-weight: bold">_</span></code>, <code>guard</code>, and <code><span style="font-weight: bold">-&gt;</span></code> is
+      syntax <code><span class="keyword">unquote</span></code>, <code><span class="keyword">unquote-splicing</span></code>,
+      <code><span class="keyword">...</span></code>, <code><span class="keyword">_</span></code>, <code>guard</code>, and <code><span class="keyword">-&gt;</span></code> is
       exported by the libraries <code>(srfi :241 match)</code>
       and <code>(srfi :241)</code>.  The auxiliary
-      syntax <code><span style="font-weight: bold">unquote</span></code>, <code><span style="font-weight: bold">unquote-splicing</span></code>,
-      <code><span style="font-weight: bold">...</span></code>, and <code><span style="font-weight: bold">_</span></code> is identical to the
+      syntax <code><span class="keyword">unquote</span></code>, <code><span class="keyword">unquote-splicing</span></code>,
+      <code><span class="keyword">...</span></code>, and <code><span class="keyword">_</span></code> is identical to the
       auxiliary syntax exported by <code>(rnrs base)</code>,
       and <code>guard</code> is identical to the syntax exported
       by <code>(rnrs exceptions)</code>.</p>
 
-    <p><code>(<span style="font-weight: bold">match</span> &lang;<span style="font-family: serif">input expression</span>&rang; &lang;<span style="font-family: serif">clause<sub>1</sub></span>&rang; …)</code></p>
+    <p><code>(<span class="keyword">match</span> &lang;<span class="metavar">input expression</span>&rang; &lang;<span class="metavar">clause<sub>1</sub></span>&rang; …)</code></p>
 
-    <p><i>Syntax:</i> <code>&lang;<span style="font-family: serif">input expression</span>&rang;</code> can be any
-    expression.  The <code>&lang;<span style="font-family: serif">clauses</span>&rang;</code> take one of two forms, either
+    <p><i>Syntax:</i> <code>&lang;<span class="metavar">input expression</span>&rang;</code> can be any
+    expression.  The <code>&lang;<span class="metavar">clauses</span>&rang;</code> take one of two forms, either
     </p>
 
-    <p><code>(&lang;<span style="font-family: serif">pattern</span>&rang; &lang;<span style="font-family: serif">body</span>&rang;)</code></p>
+    <p><code>(&lang;<span class="metavar">pattern</span>&rang; &lang;<span class="metavar">body</span>&rang;)</code></p>
 
     <p>or</p>
 
-    <p><code>(&lang;<span style="font-family: serif">pattern</span>&rang; (<span style="font-weight: bold">guard</span> &lang;<span style="font-family: serif">guard expression</span>&rang; &hellip;) &lang;<span style="font-family: serif">body</span>&rang;)</code></p>
+    <p><code>(&lang;<span class="metavar">pattern</span>&rang; (<span class="keyword">guard</span> &lang;<span class="metavar">guard expression</span>&rang; &hellip;) &lang;<span class="metavar">body</span>&rang;)</code></p>
 
-    <p>where the <code> &lang;<span style="font-family: serif">guard expressions</span>&rang;</code> can be
+    <p>where the <code> &lang;<span class="metavar">guard expressions</span>&rang;</code> can be
       any expressions.</p>
 
-    <p><i>Semantics:</i> A <code><span style="font-weight: bold">match</span></code> expression is evaluated
+    <p><i>Semantics:</i> A <code><span class="keyword">match</span></code> expression is evaluated
       as follows:</p>
 
     <ul>
       <li>
-        <p>First, the <code>&lang;<span style="font-family: serif">input expression</span>&rang;</code> is
+        <p>First, the <code>&lang;<span class="metavar">input expression</span>&rang;</code> is
           evaluated to yield an input value.</p>
       </li>
       <li>
-        <p>Then, the first <code>&lang;<span style="font-family: serif">clause</span>&rang;</code> for which
-          the input value matches its <code>&lang;<span style="font-family: serif">pattern</span>&rang;</code>
+        <p>Then, the first <code>&lang;<span class="metavar">clause</span>&rang;</code> for which
+          the input value matches its <code>&lang;<span class="metavar">pattern</span>&rang;</code>
           is selected.
         </p>
       </li>
       <li><p>
           The environment in which
-          the <code><span style="font-weight: bold">match</span></code> expression is evaluated is extended
+          the <code><span class="keyword">match</span></code> expression is evaluated is extended
           by binding the pattern variables of
-          the <code>&lang;<span style="font-family: serif">pattern</span>&rang;</code> to fresh locations, and
+          the <code>&lang;<span class="metavar">pattern</span>&rang;</code> to fresh locations, and
           the values that were matched against these pattern variables
           are stored in those locations.
         </p>
       </li>
       <li>
         <p>
-          If <code>&lang;<span style="font-family: serif">guard
+          If <code>&lang;<span class="metavar">guard
           expressions</span>&rang;</code> are present in the selected clause,
           they are evaluated in left-to-right order in the extended
           environment until one evaluates to <code>#f</code>.  In this
-          case, the rest of the <code>&lang;<span style="font-family: serif">clause</span>&rang;</code> is
+          case, the rest of the <code>&lang;<span class="metavar">clause</span>&rang;</code> is
           skipped and pattern matching proceeds with the
-          next <code>&lang;<span style="font-family: serif">clause</span>&rang;</code>.
+          next <code>&lang;<span class="metavar">clause</span>&rang;</code>.
         </p>
       </li>
       <li>
         <p>
           If
-          no <code>&lang;<span style="font-family: serif">guard expression</span>&rang;</code> evaluates
-          to <code>#f</code>, or if there is no <code>&lang;<span style="font-family: serif">guard
+          no <code>&lang;<span class="metavar">guard expression</span>&rang;</code> evaluates
+          to <code>#f</code>, or if there is no <code>&lang;<span class="metavar">guard
           expresssion</span>&rang;</code> present, in unspecified order,
-          the <code>&lang;<span style="font-family: serif">cata operators</span>&rang;</code> of
-          the <code>&lang;<span style="font-family: serif">cata clauses</span>&rang;</code> in
-          the <code>&lang;<span style="font-family: serif">pattern</span>&rang;</code> of the
-          selected <code>&lang;<span style="font-family: serif">clause</span>&rang;</code> are evaluated in no
+          the <code>&lang;<span class="metavar">cata operators</span>&rang;</code> of
+          the <code>&lang;<span class="metavar">cata clauses</span>&rang;</code> in
+          the <code>&lang;<span class="metavar">pattern</span>&rang;</code> of the
+          selected <code>&lang;<span class="metavar">clause</span>&rang;</code> are evaluated in no
           specific order in the extended environment to yield cata
           procedures, which are then invoked on the value that was
-          matched against the <code>&lang;<span style="font-family: serif">cata pattern</span>&rang;</code>.
+          matched against the <code>&lang;<span class="metavar">cata pattern</span>&rang;</code>.
           The environment is extended a second time by binding
-          the <code>&lang;<span style="font-family: serif">cata variables</span>&rang;</code> of
-          these <code>&lang;<span style="font-family: serif">cata patterns</span>&rang;</code> to fresh
+          the <code>&lang;<span class="metavar">cata variables</span>&rang;</code> of
+          these <code>&lang;<span class="metavar">cata patterns</span>&rang;</code> to fresh
           locations, and the values resulting from invoking the cata
           procedures are stored in left-to-right order in the
           corresponding locations.</p>
@@ -574,20 +580,20 @@
         <p>
           Finally, the twice-extended
           environment is extended a third time by
-          binding <code><span style="font-weight: bold">quasiquote</span></code> to ellipsis-aware
+          binding <code><span class="keyword">quasiquote</span></code> to ellipsis-aware
           quasiquotation syntax (see below),
-          the <code>&lang;<span style="font-family: serif">body</span>&rang;</code> of the
-          selected <code>&lang;<span style="font-family: serif">clause</span>&rang;</code> is evaluated in
+          the <code>&lang;<span class="metavar">body</span>&rang;</code> of the
+          selected <code>&lang;<span class="metavar">clause</span>&rang;</code> is evaluated in
           this thrice-extended environment, and the resulting values
           from its last expression are returned.
         </p>
       </li>
     </ul>
 
-    <p>If a <code>&lang;<span style="font-family: serif">cata pattern</span>&rang;</code> clause is of the
-      second form, the missing <code>&lang;<span style="font-family: serif">cata operator</span>&rang;</code>
+    <p>If a <code>&lang;<span class="metavar">cata pattern</span>&rang;</code> clause is of the
+      second form, the missing <code>&lang;<span class="metavar">cata operator</span>&rang;</code>
       defaults to an expression that evaluates to a procedure that, when
-      called with one argument, evaluates the <code><span style="font-weight: bold">match</span></code>
+      called with one argument, evaluates the <code><span class="keyword">match</span></code>
       expression with the input value replaced by the argument value in
       tail position.</p>
 
@@ -595,8 +601,8 @@
       of type <code>&amp;assertion-violation</code> is raised.
     </p>
 
-    <p>If the <code><span style="font-weight: bold">match</span></code> expression is in tail context,
-      the <code>&lang;<span style="font-family: serif">bodies</span>&rang;</code> are <code>&lang;<span style="font-family: serif">tail
+    <p>If the <code><span class="keyword">match</span></code> expression is in tail context,
+      the <code>&lang;<span class="metavar">bodies</span>&rang;</code> are <code>&lang;<span class="metavar">tail
 	bodies</span>&rang;</code>.
     </p>
 
@@ -605,72 +611,72 @@
       the <code>syntax-case</code> system of R<sup>6</sup>RS.</p>
 
     <p><i>Remark:</i> The pattern language makes use
-      of <code><span style="font-weight: bold">unquote</span></code> without a
-      corresponding <code><span style="font-weight: bold">quasiquote</span></code>. It has been criticized
+      of <code><span class="keyword">unquote</span></code> without a
+      corresponding <code><span class="keyword">quasiquote</span></code>. It has been criticized
       that this leads to an &ldquo;unbalanced&rdquo; quasiquotation
-      syntax (there is an <code><span style="font-weight: bold">unquote</span></code> without
-      a surrounding <code><span style="font-weight: bold">quasiquote</span></code>) and it has been suggested to add
-      the &ldquo;implicit&rdquo; <code><span style="font-weight: bold">quasiquote</span></code> explicitly so
+      syntax (there is an <code><span class="keyword">unquote</span></code> without
+      a surrounding <code><span class="keyword">quasiquote</span></code>) and it has been suggested to add
+      the &ldquo;implicit&rdquo; <code><span class="keyword">quasiquote</span></code> explicitly so
       that the first example</p>
 
-    <pre>    (<span style="font-weight: bold">define</span> (fold-right kons knil lis)
-      (<span style="font-weight: bold">match</span> lis
+    <pre>    (<span class="keyword">define</span> (fold-right kons knil lis)
+      (<span class="keyword">match</span> lis
         [(,x . ,[x*]) (kons x x*)]
         [() knil]))</pre>
 
     <p>would become:</p>
 
-    <pre>    (<span style="font-weight: bold">define</span> (fold-right kons knil lis)
-      (<span style="font-weight: bold">match</span> lis
+    <pre>    (<span class="keyword">define</span> (fold-right kons knil lis)
+      (<span class="keyword">match</span> lis
         [`(,x . ,[x*]) (kons x x*)]
         [`() knil]))</pre>
 
     <p>We don't subscribe to the view that there is an
-      &ldquo;implicit&rdquo; <code><span style="font-weight: bold">quasiquote</span></code> in
-      the <code><span style="font-weight: bold">match</span></code> syntax described in this SRFI.  In
-      fact, <code><span style="font-weight: bold">quasiquote</span></code> is not auxiliary syntax
-      for <code><span style="font-weight: bold">match</span></code>, and if there were an
-      implicit <code><span style="font-weight: bold">quasiquote</span></code>, a nested one should cancel
-      an <code><span style="font-weight: bold">unquote</span></code>, which it doesn't.  The same fallacy was
-      made in SRFI 200.  Moreover, following the <code><span style="font-weight: bold">unquote</span></code>
-      is not an expression, but either a <code>&lang;<span style="font-family: serif">pattern
-	variable</span>&rang;</code> or a <code>&lang;<span style="font-family: serif">cata
+      &ldquo;implicit&rdquo; <code><span class="keyword">quasiquote</span></code> in
+      the <code><span class="keyword">match</span></code> syntax described in this SRFI.  In
+      fact, <code><span class="keyword">quasiquote</span></code> is not auxiliary syntax
+      for <code><span class="keyword">match</span></code>, and if there were an
+      implicit <code><span class="keyword">quasiquote</span></code>, a nested one should cancel
+      an <code><span class="keyword">unquote</span></code>, which it doesn't.  The same fallacy was
+      made in SRFI 200.  Moreover, following the <code><span class="keyword">unquote</span></code>
+      is not an expression, but either a <code>&lang;<span class="metavar">pattern
+	variable</span>&rang;</code> or a <code>&lang;<span class="metavar">cata
 	pattern</span>&rang;</code>.</p>
 
     <h3>Ellipsis-aware quasiquotation</h3>
 
     <p>The following syntax together with the auxiliary
-      syntax <code><span style="font-weight: bold">unquote</span></code>, <code><span style="font-weight: bold">unquote-splicing</span></code>,
-      and <code><span style="font-weight: bold">...</span></code> is exported by the library <code>(srfi
+      syntax <code><span class="keyword">unquote</span></code>, <code><span class="keyword">unquote-splicing</span></code>,
+      and <code><span class="keyword">...</span></code> is exported by the library <code>(srfi
         :241 match quasiquote)</code>.  The auxiliary syntax is
       identical to the auxiliary syntax exported by <code>(rnrs
         base)</code>.</p>
 
-    <p><code>(quasiquote &lang;<span style="font-family: serif">ellipsis-aware qq template</span>&rang;)</code></p>
+    <p><code>(quasiquote &lang;<span class="metavar">ellipsis-aware qq template</span>&rang;)</code></p>
 
-    <p> If no instances of the ellipsis <code><span style="font-weight: bold">...</span></code> appear within
-      the <code>&lang;<span style="font-family: serif">ellipsis-aware qq template</span>&rang;</code> at the
+    <p> If no instances of the ellipsis <code><span class="keyword">...</span></code> appear within
+      the <code>&lang;<span class="metavar">ellipsis-aware qq template</span>&rang;</code> at the
       same nesting level as the outermost quasiquote, the result of
-      evaluating the ellipsis-aware <code><span style="font-weight: bold">quasiquote</span></code> is the
-      same as if the <code><span style="font-weight: bold">quasiquote</span></code> syntax of R<sup>6</sup>RS
+      evaluating the ellipsis-aware <code><span class="keyword">quasiquote</span></code> is the
+      same as if the <code><span class="keyword">quasiquote</span></code> syntax of R<sup>6</sup>RS
       were used.  A subtemplate of the
-      form <code>(&lang;<span style="font-family: serif">ellipsis</span>&rang; &lang;<span style="font-family: serif">qq template</span>&rang;)</code>
-      is identical to <code>&lang;<span style="font-family: serif">qq template</span>&rang;</code>, except
-      that ellipses within <code>&lang;<span style="font-family: serif">qq template</span>&rang;</code> have
+      form <code>(&lang;<span class="metavar">ellipsis</span>&rang; &lang;<span class="metavar">qq template</span>&rang;)</code>
+      is identical to <code>&lang;<span class="metavar">qq template</span>&rang;</code>, except
+      that ellipses within <code>&lang;<span class="metavar">qq template</span>&rang;</code> have
       no special meaning.  If a subtemplate is followed by one or more
-      instances of the <code>&lang;<span style="font-family: serif">ellipsis</span>&rang;</code>, the
+      instances of the <code>&lang;<span class="metavar">ellipsis</span>&rang;</code>, the
       expressions following a comma have to evaluate into nested lists
       of (at least) the same nesting depths. They are replaced in the
       output by all of the elements they match in the input,
       distributed as indicated.  It is an error if the output cannot
-      be built up as specified.  An <code>(&lang;<span style="font-family: serif">unquote-splicing
-      &lang;<span style="font-family: serif">expression</span>&rang; &hellip;)</code> form is equivalent to
-      <code>(&lang;<span style="font-family: serif">unquote</span>&rang; &lang;<span style="font-family: serif">expression</span>&rang; &hellip;)
-	&lang;<span style="font-family: serif">ellipsis</span>&rang;</code>.</p>
+      be built up as specified.  An <code>(&lang;<span class="metavar">unquote-splicing
+      &lang;<span class="metavar">expression</span>&rang; &hellip;)</code> form is equivalent to
+      <code>(&lang;<span class="metavar">unquote</span>&rang; &lang;<span class="metavar">expression</span>&rang; &hellip;)
+	&lang;<span class="metavar">ellipsis</span>&rang;</code>.</p>
 
-    <p>The auxiliary syntax <code><span style="font-weight: bold">quasiquote</span></code> within
-      an <code>&lang;<span style="font-family: serif">ellipsis-aware qq template</span>&rang;</code> is the
-      ellipsis-aware <code><span style="font-weight: bold">quasiquote</span></code>.</p>
+    <p>The auxiliary syntax <code><span class="keyword">quasiquote</span></code> within
+      an <code>&lang;<span class="metavar">ellipsis-aware qq template</span>&rang;</code> is the
+      ellipsis-aware <code><span class="keyword">quasiquote</span></code>.</p>
 
     <h2 id="implementation">Implementation</h2>
 
