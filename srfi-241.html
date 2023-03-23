@@ -114,7 +114,7 @@
     <p><code>(<span class="keyword">match</span> &lang;<span class="metavar">expr</span>&rang; &lang;<span class="metavar">clause</span>&rang; &hellip;)</code></p>
 
     <p>where <code>&lang;<span class="metavar">expr</span>&rang;</code> is the input expression to match and
-      each clause has one of the following two forms:</p>
+      each <code>&lang;<span class="metavar">clause</span>&rang;</code> has one of the following two forms:</p>
 
     <p><code>[&lang;<span class="metavar">pattern</span>&rang; (<span class="keyword">guard</span>
         &lang;<span class="metavar">guard expression</span>&rang; &hellip;) &lang;<span class="metavar">body</span>&rang;]</code></p>
@@ -123,7 +123,7 @@
 
     <p>
       As with <code>case</code>, the input expression is evaluated to
-      produce the input value and the first clause the input value
+      produce the input value and the first clause that the input value
       matches, if any, is selected.  The <code>body</code> of the
       selected clause is evaluated, and the values of the last
       expression in the body are returned.  An input value matches a
@@ -139,7 +139,7 @@
       place of matching parentheses and vice versa, mostly for
       readability.  We use brackets in this specification to document
       a recommended style.  Users of Scheme systems not supporting
-      brackets (or users who don't like brackets) can replace them
+      brackets (and users who don't like brackets) can replace them
       with parentheses throughout.</p>
 
     <pre>    (<span class="keyword">match</span> '(a 17 37)
@@ -190,7 +190,7 @@
     <p>
       A simpler version of the above uses the catamorphism feature of
       <code><span class="keyword">match</span></code>. If a pattern variable is written as
-      <code>,[<var>var</var>]</code>, <code><span class="keyword">match</span></code> recurs on the
+      <code>,&#8288;[<var>var</var>]</code>, <code><span class="keyword">match</span></code> recurs on the
       matching subpart of the input before evaluating the output
       expressions of the clause.
 
@@ -213,9 +213,10 @@
              (<span class="keyword">match</span> lis
                [() (values '() '())]
                [(,x) (values `(,x) '())]
-               [(,x ,y . ,[odds evens]) (values `(,x . ,odds)
-                                                `(,y . ,evens))]))])
-      (split '(a b c d e f)))                                          ⟹ (a c e) (b d f)</pre>
+               [(,x ,y . ,[odds evens])
+                (values `(,x . ,odds)
+                        `(,y . ,evens))]))])
+      (split '(a b c d e f)))                  ⟹ (a c e) (b d f)</pre>
 
     <p>This example is equivalent to the following one:</p>
 
@@ -224,13 +225,14 @@
              (<span class="keyword">match</span> lis
                [() (values '() '())]
                [(,x) (values `(,x) '())]
-               [(,x ,y . ,[split <span class="keyword">-&gt;</span> odds evens]) (values `(,x . ,odds)
-                                                         `(,y . ,evens))]))])
-      (split '(a b c d e f)))                                                   ⟹ (a c e) (b d f)</pre>
+               [(,x ,y . ,[split <span class="keyword">-&gt;</span> odds evens])
+                (values `(,x . ,odds)
+                        `(,y . ,evens))]))])
+      (split '(a b c d e f)))                  ⟹ (a c e) (b d f)</pre>
 
     <p>
       In this case, the operator to which recursive calls are being
-      made is explicit named in the catamorphism subpattern, which
+      made is explicitly named in the catamorphism subpattern, which
       is <code>,[split <span class="keyword">-&gt;</span> odds even]</code> in this case.</p>
 
     <p>In general, <code>,[&lang;<span class="metavar">variable</span>&rang;
@@ -288,8 +290,8 @@
          `((<span class="keyword">lambda</span> ,var* ,body ,body* <span class="keyword">...</span>) ,expr* <span class="keyword">...</span>)]
         [,x (assertion-violation 'translate "invalid expression" x)])))</pre>
 
-    <p>The better readability is, in particular, illustrated by a
-      procedure as the following with nested ellipses.  It converts
+    <p>The better readability is, in particular, illustrated by
+      the following procedure with nested ellipses.  It converts
       unnamed <code>let</code> expressions into direct lambda
       applications, where the <code>let</code> has been generalized to
       allow an implicit <code>begin</code> in each right-hand-side
@@ -355,7 +357,7 @@
 
     <p>Both the (withdrawn) SRFI 204 and this SRFI describe a pattern
       matcher and suggest that the respective one becomes included in
-      Scheme implementations and a future Scheme standard.  Yet, they
+      Scheme implementations and a future Scheme standard.  Yet they
       are not in competition with each other. Quite the contrary, it
       makes a lot of sense that a Scheme system supports both matchers
       as they apply to different areas.
@@ -368,7 +370,7 @@
       constructs.  For these binding constructs, the catamorphism
       feature in this SRFI does not make sense, so this SRFI's matcher
       lacks it.  On the other hand, the matcher described here
-      distinguished itself due to its catamorphism feature but,
+      distinguishes itself due to its catamorphism feature but,
       therefore, cannot support binding constructs.
     </p>
 
@@ -385,7 +387,8 @@
       not change the established name.  Fortunately, when reading
       code, there is virtually no danger of confusion.  Pattern
       variables in the matcher described here are all unquoted and
-      there is no quasiquote while in patterns of SRFI 204's match,
+      there is no quasiquote, while in patterns of SRFI 204's
+      <code>match</code>,
       unquoted datums usually only appear in quasiquotations.
     </p>
 
@@ -396,11 +399,11 @@
     <p><i>Remark:</i> The author of this SRFI suggests that any
       reviving attempt of SRFI 204 should make the resulting pattern
       matcher extensible so that there are only few primitives with
-      clear semantics allowing the rest of the specification defined
+      clear semantics allowing the rest of the specification to be defined
       in terms of them.</p>
 
     <p>Even better than reviving SRFI 204 would be specifying a
-      facility to define type-safe matchers similar to the Nanopass
+      facility to define type-safe matchers as in the Nanopass
       framework.</p>
 
     <h2 id="specification">Specification</h2>
@@ -463,8 +466,8 @@
     <p>A pattern of the form <code>(&lang;<span class="metavar">pattern<sub>1</sub></span>&rang;
         . &lang;<span class="metavar">pattern<sub>2</sub></span>&rang;)</code> matches a
         pair if <code>&lang;<span class="metavar">pattern<sub>1</sub></span>&rang;</code>
-        matches the car
-      and <code>&lang;<span class="metavar">pattern<sub>2</sub></span>&rang;</code> matches the cdr of the pair.</p>
+      matches the <code>car</code>
+      and <code>&lang;<span class="metavar">pattern<sub>2</sub></span>&rang;</code> matches the <code>cdr</code> of the pair.</p>
 
     <p>A pattern of the form <code>()</code> matches the empty list.</p>
 
@@ -496,9 +499,9 @@
 
     <h3>Match</h3>
 
-    <p>The following syntax together with the auxiliary
+    <p>The following syntax, together with the auxiliary
       syntax <code><span class="keyword">unquote</span></code>, <code><span class="keyword">unquote-splicing</span></code>,
-      <code><span class="keyword">...</span></code>, <code><span class="keyword">_</span></code>, <code>guard</code>, and <code><span class="keyword">-&gt;</span></code> is
+      <code><span class="keyword">...</span></code>, <code><span class="keyword">_</span></code>, <code>guard</code>, and <code><span class="keyword">-&gt;</span></code>, is
       exported by the libraries <code>(srfi :241 match)</code>
       and <code>(srfi :241)</code>.  The auxiliary
       syntax <code><span class="keyword">unquote</span></code>, <code><span class="keyword">unquote-splicing</span></code>,
@@ -612,7 +615,7 @@
 
     <p><i>Remark:</i> The pattern language makes use
       of <code><span class="keyword">unquote</span></code> without a
-      corresponding <code><span class="keyword">quasiquote</span></code>. It has been criticized
+      corresponding <code><span class="keyword">quasiquote</span></code>. It has been argued
       that this leads to an &ldquo;unbalanced&rdquo; quasiquotation
       syntax (there is an <code><span class="keyword">unquote</span></code> without
       a surrounding <code><span class="keyword">quasiquote</span></code>) and it has been suggested to add
@@ -637,7 +640,7 @@
       fact, <code><span class="keyword">quasiquote</span></code> is not auxiliary syntax
       for <code><span class="keyword">match</span></code>, and if there were an
       implicit <code><span class="keyword">quasiquote</span></code>, a nested one should cancel
-      an <code><span class="keyword">unquote</span></code>, which it doesn't.  The same fallacy was
+      an <code><span class="keyword">unquote</span></code>, which it doesn't.  The same fallacious argument was
       made in SRFI 200.  Moreover, following the <code><span class="keyword">unquote</span></code>
       is not an expression, but either a <code>&lang;<span class="metavar">pattern
 	variable</span>&rang;</code> or a <code>&lang;<span class="metavar">cata
