@@ -11,7 +11,7 @@ library-name: match
 
 This repository hosts [[https://srfi.schemers.org/srfi-241/][SRFI 241]]: Match — Simple Pattern-Matching Syntax to Express Catamorphisms on Scheme Data, a [[https://srfi.schemers.org/][Scheme Request for Implementation]].
 
-This SRFI is in /draft/ status.
+This SRFI is in /final/ status.
 See also [[/srfi-200/][SRFI 200: Pattern Matching]] and [[/srfi-204/][SRFI 204: Wright-Cartwright-Shinn Pattern Matcher]].
 The full documentation for this SRFI can be found in the [[https://srfi.schemers.org/srfi-241/srfi-241.html][SRFI Document]].
 
