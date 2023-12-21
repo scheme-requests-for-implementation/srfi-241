@@ -22,39 +22,16 @@
 ;; CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;; SOFTWARE.
 
-(library (srfi :241 match helpers)
-  (export ellipsis? length+ split-at)
-  (import (rnrs))
+(library (srfi :241 with-implicit)
+  (export
+    with-implicit)
+  (import
+    (rnrs))
 
-  (define ellipsis?
+  (define-syntax with-implicit
     (lambda (x)
-      (and (identifier? x)
-	   (free-identifier=? x #'(... ...)))))
-
-    (define length+
-    (lambda (x)
-      (let f ([x x] [y x] [n 0])
-        (if (pair? x)
-            (let ([x (cdr x)]
-                  [n (fx+ n 1)])
-              (if (pair? x)
-                  (let ([x (cdr x)]
-                        [y (cdr y)]
-                        [n (fx+ n 1)])
-                    (and (not (eq? x y))
-                         (f x y n)))
-                  n))
-            n))))
-
-  (define split-at
-    (lambda (ls k)
-      (let f ([ls ls] [k k])
-        (if (fxzero? k)
-            (values '() ls)
-            (let-values ([(ls1 ls2)
-                          (f (cdr ls) (fx- k 1))])
-              (values (cons (car ls) ls1) ls2)))))))
-
-;; Local Variables:
-;; mode: scheme
-;; End:
+      (syntax-case x ()
+        [(_ (k x ...) e1 ... e2)
+         #'(with-syntax ([x (datum->syntax #'k 'x)] ...)
+             e1 ... e2)]
+        [_ (syntax-violation 'with-implicit "invalid syntax" x)]))))
