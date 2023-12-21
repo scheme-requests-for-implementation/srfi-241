@@ -1,6 +1,6 @@
 #!r6rs
 
-;; Copyright (C) Marc Nieper-Wißkirchen (2022).  All Rights Reserved.
+;; Copyright (C) Marc Nieper-Wißkirchen (2023).  All Rights Reserved.
 
 ;; Permission is hereby granted, free of charge, to any person
 ;; obtaining a copy of this software and associated documentation
@@ -23,15 +23,12 @@
 ;; SOFTWARE.
 
 (library (srfi :241 match quasiquote)
-  (export (rename (ellipsis-aware-quasiquote quasiquote))
+  (export quasiquote
           unquote unquote-splicing ...)
-  (import (rnrs (6))
-          (srfi :241 match quasiquote-transformer))
+  (import (except (rnrs (6)) quasiquote)
+          (srfi :241 match))
 
-  (define-syntax ellipsis-aware-quasiquote
-    quasiquote-transformer)
-
-  )
+  (define-extended-quasiquote quasiquote))
 
 ;; Local Variables:
 ;; mode: scheme

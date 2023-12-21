@@ -22,10 +22,19 @@
 ;; CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;; SOFTWARE.
 
-(library (srfi :241)
-  (export match unquote ... _ -> guard)
-  (import (srfi :241 match)))
+(library (srfi :241 define-auxiliary-syntax)
+  (export
+    define-auxiliary-syntax)
+  (import
+    (rnrs)
+    (srfi :241 define-who))
 
-;; Local Variables:
-;; mode: scheme
-;; End:
+  (define-syntax/who define-auxiliary-syntax
+    (lambda (x)
+      (syntax-case x ()
+        [(_ name)
+         (identifier? #'name)
+         #'(define-syntax/who name
+             (lambda (x)
+               (syntax-violation who "misplaced auxiliary keyword" x)))]
+        [_ (syntax-violation who "invalid syntax" x)]))))

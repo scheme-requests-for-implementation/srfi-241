@@ -22,10 +22,44 @@
 ;; CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;; SOFTWARE.
 
-(library (srfi :241)
-  (export match unquote ... _ -> guard)
-  (import (srfi :241 match)))
+(library (srfi :241 helpers)
+  (export
+    construct-name
+    ellipsis?
+    symbolic-identifier=?)
+  (import
+    (rnrs)
+    (srfi :241 define-who))
 
-;; Local Variables:
-;; mode: scheme
-;; End:
+  (define/who symbolic-identifier=?
+    (lambda (id1 id2)
+      (unless (identifier? id1)
+        (assertion-violation who "invalid first identifier argument" id1))
+      (unless (identifier? id2)
+        (assertion-violation who "invalid second identifier argument" id2))
+      (symbol=? (syntax->datum id1)
+                (syntax->datum id2))))
+
+  (define/who construct-name
+    (lambda (k . arg*)
+      (unless (identifier? k)
+        (assertion-violation who "invalid template identifier argument" k))
+      (datum->syntax
+       k
+       (string->symbol
+	(apply string-append
+	       (map (lambda (x)
+		      (cond
+                       [(string? x) x]
+                       [(identifier? x)
+			(symbol->string (syntax->datum x))]
+                       [else
+                        (assertion-violation who "invalid argument" x)]))
+		    arg*))))))
+
+  (define ellipsis?
+    (lambda (x)
+      (and (identifier? x)
+	   (free-identifier=? x #'(... ...)))))
+
+  )
