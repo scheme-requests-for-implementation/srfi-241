@@ -34,6 +34,9 @@
       <li>Draft #1 published: 2022-11-10</li>
       <li>Draft #2 published: 2022-12-10</li>
       <li>Finalized: 2023-03-23</li>
+      <li>Revised to fix errata:
+        <ul>
+          <li>2023-12-21 (Added <a href="#errata-1">missing vector pattern</a>.)</li></ul></li>
     </ul>
 
     <h2>Table of contents</h2>
@@ -488,7 +491,7 @@
 
     <p>A pattern of the form <code>()</code> matches the empty list.</p>
 
-    <p>A pattern of the
+    <p id="errata-1">A pattern of the
       form <code>#(&lang;<span class="metavar">pattern</span>&rang;
       &hellip;)</code> matches a vector of as many elements as there
       are <code>&lang;<span class="metavar">patterns&rang;</span></code> if
