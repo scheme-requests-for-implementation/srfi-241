@@ -437,6 +437,8 @@
 
     <p><code>()</code></p>
 
+    <p><code>#(&lang;<span class="metavar">pattern</span>&rang; &hellip;)</code></p>
+
     <p><code>#(&lang;<span class="metavar">pattern</span>&rang; &hellip; &lang;<span class="metavar">pattern</span>&rang; &lang;<span class="metavar">ellipsis</span>&rang; &lang;<span class="metavar">pattern</span>&rang; &hellip;)</code></p>
 
     <p><code>,<span class="keyword">_</span></code></p>
@@ -485,6 +487,14 @@
       and <code>&lang;<span class="metavar">pattern<sub>2</sub></span>&rang;</code> matches the <code>cdr</code> of the pair.</p>
 
     <p>A pattern of the form <code>()</code> matches the empty list.</p>
+
+    <p>A pattern of the
+      form <code>#(&lang;<span class="metavar">pattern</span>&rang;
+      &hellip;)</code> matches a vector of as many elements as there
+      are <code>&lang;<span class="metavar">patterns&rang;</span></code> if
+      each element matches the
+      corresponding <code>&lang;<span class="metavar">pattern</span>&rang;</code>.
+    </p>
 
     <p>A pattern of the form <code>#(&lang;<span class="metavar">pattern<sub>1</sub></span>&rang; &hellip;
     &lang;<span class="metavar">pattern<sub><var>k</var></sub></span>&rang; &lang;<span class="metavar">pattern<sub>e</sub></span>&rang;
