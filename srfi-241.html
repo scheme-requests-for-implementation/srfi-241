@@ -36,7 +36,8 @@
       <li>Finalized: 2023-03-23</li>
       <li>Revised to fix errata:
         <ul>
-          <li>2023-12-21 (Added <a href="#errata-1">missing vector pattern</a>.)</li></ul></li>
+          <li>2023-12-21 (Added <a href="#errata-1">missing vector pattern</a>.)</li>
+          <li>2024-09-13 (<a href="#errata-2">Refined wording</a> to clarify.)</li></ul></li>
     </ul>
 
     <h2>Table of contents</h2>
@@ -700,11 +701,11 @@
       of (at least) the same nesting depths. They are replaced in the
       output by all of the elements they match in the input,
       distributed as indicated.  It is an error if the output cannot
-      be built up as specified.  An <code>(<span class="keyword">unquote-splicing</span>
+      be built up as specified.  <span id="errata-2">An <code>(<span class="keyword">unquote-splicing</span>
       &lang;<span class="metavar">expression</span>&rang; &hellip;)</code> form is equivalent to
       <code>(<span class="keyword">unquote</span> &lang;<span class="metavar">expression</span>&rang; &hellip;)
 	&lang;<span class="metavar">ellipsis</span>&rang;</code>,
-      where this <code>&lang;<span class="metavar">ellipsis</span>&rang;</code>
+      where this <code>&lang;<span class="metavar">ellipsis</span>&rang;</code></span>
       retains its special meaning.</p>
 
     <p>The auxiliary syntax <code><span class="keyword">quasiquote</span></code> within
