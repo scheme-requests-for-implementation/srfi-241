@@ -700,10 +700,12 @@
       of (at least) the same nesting depths. They are replaced in the
       output by all of the elements they match in the input,
       distributed as indicated.  It is an error if the output cannot
-      be built up as specified.  An <code>(&lang;<span class="metavar">unquote-splicing
-      &lang;expression</span>&rang; &hellip;)</code> form is equivalent to
-      <code>(&lang;<span class="metavar">unquote</span>&rang; &lang;<span class="metavar">expression</span>&rang; &hellip;)
-	&lang;<span class="metavar">ellipsis</span>&rang;</code>.</p>
+      be built up as specified.  An <code>(<span class="keyword">unquote-splicing</span>
+      &lang;<span class="metavar">expression</span>&rang; &hellip;)</code> form is equivalent to
+      <code>(<span class="keyword">unquote</span> &lang;<span class="metavar">expression</span>&rang; &hellip;)
+	&lang;<span class="metavar">ellipsis</span>&rang;</code>,
+      where this <code>&lang;<span class="metavar">ellipsis</span>&rang;</code>
+      retains its special meaning.</p>
 
     <p>The auxiliary syntax <code><span class="keyword">quasiquote</span></code> within
       an <code>&lang;<span class="metavar">ellipsis-aware qq template</span>&rang;</code> is the
