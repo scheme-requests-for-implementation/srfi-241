@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html>
     <head>
-      <!-- SPDX-FileCopyrightText: 2024 Arthur A. Gleckler -->
+      <!-- SPDX-FileCopyrightText: 2026 Arthur A. Gleckler -->
       <!-- SPDX-License-Identifier: MIT -->
       <title>Match — Simple Pattern-Matching Syntax to Express Catamorphisms on Scheme Data</title>
+      <script>!function(s, k, mq, r) {
+  var p = s.getItem(k), v = [null, 'light', 'dark'],
+      S = '<svg viewBox="0 0 20 20" width="1em" height="1em">',
+      C = '<circle cx="10" cy="10" r="9" ',
+      c = [S + C + 'fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 1A9 9 0 0 0 10 19Z" fill="currentColor"/></svg>',
+           S + C + 'fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+           S + C + 'fill="black" stroke="white" stroke-width="2"/></svg>'];
+  function a(t) { r.dataset.theme = t || (mq.matches ? 'dark' : 'light') }
+  a(p);
+  mq.onchange = function() { s.getItem(k) || a() };
+  document.addEventListener('DOMContentLoaded', function() {
+    var i = Math.max(0, v.indexOf(p)),
+        b = document.body.appendChild(document.createElement('button'));
+    b.id = 'theme-toggle';
+    function u() { b.innerHTML = c[i]; b.title = (v[i] || 'system') + ' theme' }
+    b.onclick = function() { i = (i + 1) % 3; v[i] ? s.setItem(k, v[i]) : s.removeItem(k); a(v[i]); u() };
+    u()
+  })
+}(localStorage, 'theme', matchMedia('(prefers-color-scheme: dark)'), document.documentElement);
+</script>
       <link href="/admin.css" rel="stylesheet">
       <link href="/list.css" rel="stylesheet">
       <link href="/favicon.png" rel="icon" sizes="192x192" type="image/png">
@@ -16,7 +36,7 @@
       <p class="authors">by Marc Nieper-Wißkirchen</p>
       <p class="based-on"></p>
       <p class="status">status: <em>final</em> (2023-03-23)</p>
-      <p class="keywords">keywords: <a href="https://srfi.schemers.org/?keywords=pattern-matching">Pattern Matching</a>, <a href="https://srfi.schemers.org/?keywords=syntax">Syntax</a></p><span class="see-also">See also <a href="/srfi-200/">SRFI 200: Pattern Matching</a>, <a href="/srfi-204/">SRFI 204: Wright-Cartwright-Shinn Pattern Matcher</a>, and <a href="/srfi-257/">SRFI 257: Simple extendable pattern matcher with backtracking</a>.</span>
+      <p class="keywords">keywords: <a href="https://srfi.schemers.org/?keywords=pattern-matching">Pattern Matching</a>, <a href="https://srfi.schemers.org/?keywords=syntax">Syntax</a></p><span class="see-also">See also <a href="/srfi-200/">SRFI 200: Pattern Matching</a>, <a href="/srfi-204/">SRFI 204: Wright-Cartwright-Shinn Pattern Matcher</a>, <a href="/srfi-257/">SRFI 257: Simple extendable pattern matcher with backtracking</a>, and <a href="/srfi-262/">SRFI 262: Extensible pattern matcher</a>.</span>
       <p class="library-name">library name: match</p>
       <ul class="info">
         <li><a href="srfi-241.html">The SRFI Document</a></li>
